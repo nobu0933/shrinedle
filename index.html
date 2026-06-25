@@ -3,23 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- このページをインデックス（掲載）しない -->
-	<meta name="robots" content="noindex,nofollow" />
     <title>Shrinedle - 神社ワードル</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* デフォルト（スマホ・縦長画面）の設定 */
+        .pc-wide-container {
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto 20px auto;
+            box-sizing: border-box;
+        }
+        .mode-flex-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: stretch;
+            flex-direction: column; /* スマホでは縦並び */
+        }
+        .mode-box {
+            flex: 1;
+        }
+
+        /* パソコン表示（画面幅が768px以上）のときの設定 */
+        @media screen and (min-width: 768px) {
+            .pc-wide-container {
+                max-width: 900px; /* パソコンでは横幅を広く（900px）設定 */
+            }
+            .mode-flex-container {
+                flex-direction: row; /* パソコンでは横並びに変更 */
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <header>
-        <h1>Shrinedle</h1>
-        <div class="subtitle">神社ワードル</div>
+    <header style="display: table; margin: 0 auto 25px auto; text-align: left;">
+        <div style="display: table-cell; vertical-align: middle; padding-right: 20px;">
+            <h1 style="color: #d9333f; margin: 0; font-size: 3rem; line-height: 1.1; font-weight: bold;">Shrinedle</h1>
+            <div class="subtitle" style="font-size: 1.1rem; color: #666; margin-top: 4px; letter-spacing: 2px;">神社ワードル</div>
+        </div>
+        <div style="display: table-cell; vertical-align: middle;">
+            <img src="KSK_logo.PNG" alt="Shrinedleロゴ・写真" style="height: 120px; width: auto; display: block; border-radius: 6px;">
+        </div>
     </header>
 
-    <div id="mode-selection" style="text-align: center; margin-bottom: 20px; background-color: #ffffff; border: 2px solid #e0dbcd; border-radius: 8px; padding: 20px; max-width: 500px; width: 100%; box-sizing: border-box; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <div id="rule-box" class="pc-wide-container" style="background-color: #ffffff; border: 2px solid #e0dbcd; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left;">
+        <h3 style="margin-top: 0; margin-bottom: 12px; color: #d9333f; font-size: 1.2rem; border-bottom: 2px solid #d9333f; padding-bottom: 5px; display: inline-block;">基本ルール</h3>
+        <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem; color: #333; line-height: 1.6;">
+            <li style="margin-bottom: 8px;">答えの神社名と入力した神社名で、入力した文字と位置が一致してる場合は、その文字の背景色が<b>緑色</b>で表示されます。同じ文字が含まれているが、文字の位置が違う場合は、その文字の背景色が<b>黄色</b>で表示されます。</li>
+            <li style="margin-bottom: 8px;">「っ」などの小文字は「つ」のように大きな文字で出力されます。なお、入力の際は小文字のまま入力してください。<br>
+                <span style="color: #666; font-size: 0.85rem;">例）入力「きょうと」→ 出力「きようと」</span>
+            </li>
+            <li style="margin-bottom: 8px;">入力は10回までできます。10回以内に答えの神社名を当てられたらゲームクリアです。</li>
+            <li style="margin-bottom: 8px;">ヒントボタンを押すと、リストにある神社の中からランダムに一つ提示してくれます。何も名前が浮かばない場合などに活用してください。なお、もちろん提示された神社を入力しなくても構いません。</li>
+            <li style="margin-bottom: 0;">リタイアする場合は、リタイアボタンを押してください。正解が表示されます。</li>
+        </ul>
+    </div>
+
+    <div id="mode-selection" class="pc-wide-container" style="text-align: center; background-color: #ffffff; border: 2px solid #e0dbcd; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
         <h3 style="margin-top: 0; margin-bottom: 20px; color: #333; font-size: 1.2rem;">ゲームモードを選択</h3>
-        <div style="display: flex; gap: 15px; justify-content: center; align-items: stretch; flex-direction: column;">
+        <div class="mode-flex-container">
             
-            <div style="background: #f7f9fa; padding: 15px; border-radius: 6px; border: 1px solid #dbe3e6;">
+            <div class="mode-box" style="background: #f7f9fa; padding: 15px; border-radius: 6px; border: 1px solid #dbe3e6;">
                 <button id="btn-mode-easy" style="width: 100%; padding: 12px; font-size: 1.1rem; background-color: #3498db; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">イージー</button>
                 <div style="margin: 0; font-size: 0.85rem; color: #555; text-align: left; line-height: 1.5;">
                     <ul style="margin: 0; padding-left: 20px;">
@@ -32,7 +77,7 @@
                 </div>
             </div>
             
-            <div style="background: #faf7f7; padding: 15px; border-radius: 6px; border: 1px solid #ebdada;">
+            <div class="mode-box" style="background: #faf7f7; padding: 15px; border-radius: 6px; border: 1px solid #ebdada;">
                 <button id="btn-mode-hard" style="width: 100%; padding: 12px; font-size: 1.1rem; background-color: #d9333f; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">ハード</button>
                 <div style="margin: 0; font-size: 0.85rem; color: #555; text-align: left; line-height: 1.5;">
                     <ul style="margin: 0; padding-left: 20px;">
@@ -49,84 +94,51 @@
     </div>
 
     <div id="game-content" style="display: none; flex-direction: column; align-items: center; width: 100%;">
-        <div id="status-container" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; width: 100%; max-width: 400px;">
+        <div id="status-container" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; width: 100%; max-width: 440px;">
             <div id="current-mode-display" style="font-weight: bold; padding: 6px 12px; border-radius: 4px; color: white; font-size: 0.9rem;"></div>
             <div id="counter" style="font-weight: bold; font-size: 1rem; color: #555;">試行: 1 / 10</div>
             <div style="display: flex; gap: 5px;">
+                <button id="btn-giveup" style="padding: 6px 12px; background-color: #e67e22; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">リタイア</button>
                 <button id="btn-reset" style="padding: 6px 12px; background-color: #333; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">最初から</button>
                 <button id="btn-go-to-select" style="padding: 6px 12px; background-color: #7f8c8d; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">モード選択</button>
             </div>
         </div>
         
-        <div id="message" style="font-weight: bold; color: #d9333f; min-height: 24px; margin-bottom: 15px; text-align: center;"></div>
+        <div id="message" style="font-weight: bold; color: #d9333f; min-height: 24px; margin-bottom: 15px; text-align: center; max-width: 400px; line-height: 1.4;"></div>
 
-        <div id="input-container" style="margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 400px;">
+        <div id="input-container" style="margin-bottom: 20px; display: flex; gap: 8px; justify-content: center; width: 100%; max-width: 440px;">
             <input type="text" id="shrine-input" placeholder="ひらがなを入力" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                   style="flex: 1; padding: 10px; font-size: 1.2rem; border: 2px solid #ccc; border-radius: 4px; text-align: center;">
-            <button id="btn-submit-guess" style="padding: 10px 20px; font-size: 1.1rem; background-color: #d9333f; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">回答する</button>
+                   style="flex: 1; padding: 10px; font-size: 1.2rem; border: 2px solid #ccc; border-radius: 4px; text-align: center; min-width: 0;">
+            <button id="btn-submit-guess" style="padding: 10px 15px; font-size: 1.1rem; background-color: #d9333f; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; white-space: nowrap;">回答する</button>
+            <button id="btn-hint" style="padding: 10px 15px; font-size: 1.1rem; background-color: #2ecc71; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; white-space: nowrap;">ヒント</button>
         </div>
 
         <div id="description-box">
             <h3 id="desc-title">単語の解説</h3>
             <p id="desc-text">ここに説明文が入ります。</p>
+            <div id="map-button-container" style="margin-top: 15px; text-align: center;"></div>
         </div>
 
         <div class="game-container">
             <div id="board"></div>
 
             <div id="keyboard">
-                <div class="key-row">
-                    <button class="key" data-key="あ">あ</button><button class="key" data-key="い">い</button><button class="key" data-key="う">う</button><button class="key" data-key="え">え</button><button class="key" data-key="お">お</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="か">か</button><button class="key" data-key="き">き</button><button class="key" data-key="く">く</button><button class="key" data-key="け">け</button><button class="key" data-key="こ">こ</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="さ">さ</button><button class="key" data-key="し">し</button><button class="key" data-key="す">す</button><button class="key" data-key="せ">せ</button><button class="key" data-key="そ">そ</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="た">た</button><button class="key" data-key="ち">ち</button><button class="key" data-key="つ">つ</button><button class="key" data-key="て">て</button><button class="key" data-key="と">と</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="な">な</button><button class="key" data-key="に">に</button><button class="key" data-key="ぬ">ぬ</button><button class="key" data-key="ね">ね</button><button class="key" data-key="の">の</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="は">は</button><button class="key" data-key="ひ">ひ</button><button class="key" data-key="ふ">ふ</button><button class="key" data-key="へ">へ</button><button class="key" data-key="ほ">ほ</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="ま">ま</button><button class="key" data-key="み">み</button><button class="key" data-key="む">む</button><button class="key" data-key="め">め</button><button class="key" data-key="も">も</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="や">や</button>
-                    <div style="grid-column: 3;"><button class="key" data-key="ゆ">ゆ</button></div>
-                    <div style="grid-column: 5;"><button class="key" data-key="よ">よ</button></div>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="ら">ら</button><button class="key" data-key="り">り</button><button class="key" data-key="る">る</button><button class="key" data-key="れ">れ</button><button class="key" data-key="ろ">ろ</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="わ">わ</button>
-                    <div style="grid-column: 3;"><button class="key" data-key="を">を</button></div>
-                    <div style="grid-column: 5;"><button class="key" data-key="ん">ん</button></div>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="が">が</button><button class="key" data-key="ぎ">ぎ</button><button class="key" data-key="ぐ">ぐ</button><button class="key" data-key="げ">げ</button><button class="key" data-key="ご">ご</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="ざ">ざ</button><button class="key" data-key="じ">じ</button><button class="key" data-key="ず">ず</button><button class="key" data-key="ぜ">ぜ</button><button class="key" data-key="ぞ">ぞ</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="だ">だ</button><button class="key" data-key="ぢ">ぢ</button><button class="key" data-key="づ">づ</button><button class="key" data-key="で">で</button><button class="key" data-key="ど">ど</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="ば">ば</button><button class="key" data-key="び">び</button><button class="key" data-key="ぶ">ぶ</button><button class="key" data-key="べ">べ</button><button class="key" data-key="ぼ">ぼ</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="ぱ">ぱ</button><button class="key" data-key="ぴ">ぴ</button><button class="key" data-key="ぷ">ぷ</button><button class="key" data-key="ぺ">ぺ</button><button class="key" data-key="ぽ">ぽ</button>
-                </div>
-                <div class="key-row">
-                    <button class="key" data-key="っ">っ</button><button class="key" data-key="ゃ">ゃ</button><button class="key" data-key="ゅ">ゅ</button><button class="key" data-key="ょ">ょ</button><button class="key" data-key="ー">ー</button>
-                </div>
+                <div class="key-row"><button class="key" data-key="あ">あ</button><button class="key" data-key="い">い</button><button class="key" data-key="う">う</button><button class="key" data-key="え">え</button><button class="key" data-key="お">お</button></div>
+                <div class="key-row"><button class="key" data-key="か">か</button><button class="key" data-key="き">き</button><button class="key" data-key="く">く</button><button class="key" data-key="け">け</button><button class="key" data-key="こ">こ</button></div>
+                <div class="key-row"><button class="key" data-key="さ">さ</button><button class="key" data-key="し">し</button><button class="key" data-key="す">す</button><button class="key" data-key="せ">せ</button><button class="key" data-key="そ">そ</button></div>
+                <div class="key-row"><button class="key" data-key="た">た</button><button class="key" data-key="ち">ち</button><button class="key" data-key="つ">つ</button><button class="key" data-key="て">て</button><button class="key" data-key="と">と</button></div>
+                <div class="key-row"><button class="key" data-key="な">な</button><button class="key" data-key="に">に</button><button class="key" data-key="ぬ">ぬ</button><button class="key" data-key="ね">ね</button><button class="key" data-key="の">の</button></div>
+                <div class="key-row"><button class="key" data-key="は">は</button><button class="key" data-key="ひ">ひ</button><button class="key" data-key="ふ">ふ</button><button class="key" data-key="へ">へ</button><button class="key" data-key="ほ">ほ</button></div>
+                <div class="key-row"><button class="key" data-key="ま">ま</button><button class="key" data-key="み">み</button><button class="key" data-key="む">む</button><button class="key" data-key="め">め</button><button class="key" data-key="も">も</button></div>
+                <div class="key-row"><button class="key" data-key="や">や</button><div style="grid-column: 3;"><button class="key" data-key="ゆ">ゆ</button></div><div style="grid-column: 5;"><button class="key" data-key="よ">よ</button></div></div>
+                <div class="key-row"><button class="key" data-key="ら">ら</button><button class="key" data-key="り">り</button><button class="key" data-key="る">る</button><button class="key" data-key="れ">れ</button><button class="key" data-key="ろ">ろ</button></div>
+                <div class="key-row"><button class="key" data-key="わ">わ</button><div style="grid-column: 3;"><button class="key" data-key="を">を</button></div><div style="grid-column: 5;"><button class="key" data-key="ん">ん</button></div></div>
+                <div class="key-row"><button class="key" data-key="が">が</button><button class="key" data-key="ぎ">ぎ</button><button class="key" data-key="ぐ">ぐ</button><button class="key" data-key="げ">げ</button><button class="key" data-key="ご">ご</button></div>
+                <div class="key-row"><button class="key" data-key="ざ">ざ</button><button class="key" data-key="じ">じ</button><button class="key" data-key="ず">ず</button><button class="key" data-key="ぜ">ぜ</button><button class="key" data-key="ぞ">ぞ</button></div>
+                <div class="key-row"><button class="key" data-key="だ">だ</button><button class="key" data-key="ぢ">ぢ</button><button class="key" data-key="づ">づ</button><button class="key" data-key="で">で</button><button class="key" data-key="ど">ど</button></div>
+                <div class="key-row"><button class="key" data-key="ば">ば</button><button class="key" data-key="び">び</button><button class="key" data-key="ぶ">ぶ</button><button class="key" data-key="べ">べ</button><button class="key" data-key="ぼ">ぼ</button></div>
+                <div class="key-row"><button class="key" data-key="ぱ">ぱ</button><button class="key" data-key="ぴ">ぴ</button><button class="key" data-key="ぷ">ぷ</button><button class="key" data-key="ぺ">ぺ</button><button class="key" data-key="ぽ">ぽ</button></div>
+                <div class="key-row"><button class="key" data-key="っ">っ</button><button class="key" data-key="ゃ">ゃ</button><button class="key" data-key="ゅ">ゅ</button><button class="key" data-key="ょ">ょ</button><button class="key" data-key="ー">ー</button></div>
                 <div class="key-row action-row">
                     <button class="key wide" id="btn-backspace">消す</button>
                     <button class="key wide" id="btn-enter">判定</button>
@@ -152,6 +164,7 @@
         let ANSWER = "";
         let currentMode = ""; 
         let activeData = {}; 
+        let guessedWords = []; 
 
         const VISUAL_MAX_LENGTH = 4;
         const MAX_ATTEMPTS = 10;
@@ -168,8 +181,12 @@
         const descBox = document.getElementById("description-box");
         const descTitle = document.getElementById("desc-title");
         const descText = document.getElementById("desc-text");
+        const mapButtonContainer = document.getElementById("map-button-container");
         const shrineInput = document.getElementById("shrine-input");
         const btnSubmitGuess = document.getElementById("btn-submit-guess");
+        const btnHint = document.getElementById("btn-hint");
+        const btnGiveup = document.getElementById("btn-giveup");
+        const ruleBox = document.getElementById("rule-box");
 
         function convertToLarge(str) {
             const map = {
@@ -181,6 +198,7 @@
 
         function showModeSelection() {
             modeSelection.style.display = "block";
+            ruleBox.style.display = "block";
             gameContent.style.display = "none";
         }
 
@@ -188,8 +206,10 @@
             currentMode = mode;
             currentRow = 0;
             gameOver = false;
+            guessedWords = []; 
             
             modeSelection.style.display = "none";
+            ruleBox.style.display = "none";
             gameContent.style.display = "flex";
 
             if (currentMode === "easy") {
@@ -211,6 +231,8 @@
             
             shrineInput.disabled = false;
             btnSubmitGuess.disabled = false;
+            btnHint.disabled = false;
+            btnGiveup.disabled = false;
             
             RANDOM_KANA = VALID_KANA.length > 0 ? VALID_KANA[Math.floor(Math.random() * VALID_KANA.length)] : "かみがも";
             ANSWER = convertToLarge(RANDOM_KANA);
@@ -225,6 +247,7 @@
 
             message.textContent = "";
             descBox.style.display = "none";
+            mapButtonContainer.innerHTML = "";
 
             board.innerHTML = "";
             board.style.display = "flex";
@@ -327,11 +350,18 @@
                 }
             }
 
+            if (guessedWords.includes(guess)) {
+                showMessage("すでに回答されてます");
+                return;
+            }
+
             const isValidWord = VALID_KANA.some(kana => convertToLarge(kana) === guess);
             if (!isValidWord) {
                 showMessage("リストにない単語です");
                 return;
             }
+
+            guessedWords.push(guess);
 
             let answerLetters = ANSWER.split(""); 
             let rowTiles = [];
@@ -389,10 +419,37 @@
             }
         }
 
+        btnHint.addEventListener("click", () => {
+            if (gameOver) return;
+            const hintPool = VALID_KANA.filter(kana => convertToLarge(kana) !== ANSWER);
+            if (hintPool.length > 0) {
+                const randomHintKana = hintPool[Math.floor(Math.random() * hintPool.length)];
+                const hintData = activeData[randomHintKana];
+                const hintName = hintData ? `${hintData.kanji}（${randomHintKana}）` : randomHintKana;
+                showMessage(`💡ヒント: リストには「${hintName}」などが含まれています！`);
+            } else {
+                showMessage("ヒントにする単語がリストにありません。");
+            }
+            shrineInput.focus();
+        });
+
+        btnGiveup.addEventListener("click", () => {
+            if (gameOver) return;
+            if (confirm("本当に諦めますか？（正解が表示されます）")) {
+                const correctData = activeData[RANDOM_KANA];
+                const kanjiName = correctData ? correctData.kanji : RANDOM_KANA;
+                showMessage(`リタイアしました。正解は【${kanjiName}】でした。`);
+                showDescription();
+                endGame();
+            }
+        });
+
         function endGame() {
             gameOver = true;
             shrineInput.disabled = true;
             btnSubmitGuess.disabled = true;
+            btnHint.disabled = true;
+            btnGiveup.disabled = true;
         }
 
         function updateCounter() {
@@ -406,6 +463,28 @@
             if (data) {
                 descTitle.textContent = `【${data.kanji}（${RANDOM_KANA}）】の解説`;
                 descText.textContent = data.desc;
+                
+                mapButtonContainer.innerHTML = "";
+                const mapBtn = document.createElement("a");
+                mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.kanji)}`;
+                mapBtn.target = "_blank";
+                mapBtn.textContent = "🗺️ Google Mapsで場所を見る";
+                
+                mapBtn.style.display = "inline-block";
+                mapBtn.style.padding = "10px 20px";
+                mapBtn.style.backgroundColor = "#27ae60";
+                mapBtn.style.color = "white";
+                mapBtn.style.textDecoration = "none";
+                mapBtn.style.fontWeight = "bold";
+                mapBtn.style.borderRadius = "4px";
+                mapBtn.style.fontSize = "1rem";
+                mapBtn.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+                mapBtn.style.transition = "background-color 0.2s";
+                
+                mapBtn.onmouseover = () => mapBtn.style.backgroundColor = "#219653";
+                mapBtn.onmouseout = () => mapBtn.style.backgroundColor = "#27ae60";
+
+                mapButtonContainer.appendChild(mapBtn);
                 descBox.style.display = "block";
             }
         }
@@ -422,7 +501,7 @@
 
         function showMessage(msg) {
             message.textContent = msg;
-            if (msg.includes("文字") || msg.includes("リストにない")) {
+            if (msg.includes("文字") || msg.includes("リストにない") || msg.includes("すでに回答")) {
                 setTimeout(() => { if (message.textContent === msg) message.textContent = ""; }, 3000);
             }
         }
