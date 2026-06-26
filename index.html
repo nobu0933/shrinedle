@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- このページをインデックス（掲載）しない -->
+	<!-- このページをインデックス（掲載）しない -->
 	<!-- <meta name="robots" content="noindex,nofollow" /> -->
     <title>Shrinedle - 神社ワードル</title>
 	<meta name="description" content="神社ワードル。Shrinedle。Jinja Wordle">
-    <meta name="keywords" content="神社ワードル, shrinedle, 神ドル, Shrinedle">
-    <link rel="icon" href="KSK_logo.PNG" type="image/png">
+    <meta name="keywords" content="神社ワードル, shrinedle, 神ドル, Shrinedle, 京都, 神社, ワードル, Shrine, shrine, wordle, Wordle, Kyoto, シュラインドル">
     <link rel="stylesheet" href="style.css">
     <style>
         /* デフォルト（スマホ・縦長画面）の設定 */
@@ -23,7 +22,7 @@
             gap: 15px;
             justify-content: center;
             align-items: stretch;
-            flex-direction: column; /* スマホでは縦並び */
+            flex-direction: column;
         }
         .mode-box {
             flex: 1;
@@ -32,10 +31,10 @@
         /* パソコン表示（画面幅が768px以上）のときの設定 */
         @media screen and (min-width: 768px) {
             .pc-wide-container {
-                max-width: 900px; /* パソコンでは横幅を広く（900px）設定 */
+                max-width: 900px;
             }
             .mode-flex-container {
-                flex-direction: row; /* パソコンでは横並びに変更 */
+                flex-direction: row;
             }
         }
     </style>
@@ -60,7 +59,7 @@
                 <span style="color: #666; font-size: 0.85rem;">例）入力「きょうと」→ 出力「きようと」</span>
             </li>
             <li style="margin-bottom: 8px;">入力は10回までできます。10回以内に答えの神社名を当てられたらゲームクリアです。</li>
-            <li style="margin-bottom: 8px;">ヒントボタンを押すと、リストにある神社の中からランダムに一つ提示してくれます。何も名前が浮かばない場合などに活用してください。なお、もちろん提示された神社を入力しなくても構いません。</li>
+            <li style="margin-bottom: 8px;">ヒントボタンを押すと、リストにある神社の中からランダムに一つ提示してくれます。5回まで使えます。何も名前が浮かばない場合などに活用してください。なお、もちろん提示された神社を入力しなくても構いません。</li>
             <li style="margin-bottom: 0;">リタイアする場合は、リタイアボタンを押してください。正解が表示されます。</li>
         </ul>
     </div>
@@ -115,7 +114,7 @@
             <input type="text" id="shrine-input" placeholder="ひらがなを入力" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
                    style="flex: 1; padding: 10px; font-size: 1.2rem; border: 2px solid #ccc; border-radius: 4px; text-align: center; min-width: 0;">
             <button id="btn-submit-guess" style="padding: 10px 15px; font-size: 1.1rem; background-color: #d9333f; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; white-space: nowrap;">回答する</button>
-            <button id="btn-hint" style="padding: 10px 15px; font-size: 1.1rem; background-color: #2ecc71; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; white-space: nowrap;">ヒント</button>
+            <button id="btn-hint" style="padding: 10px 15px; font-size: 1.1rem; background-color: #2ecc71; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; white-space: nowrap;">ヒント (残り5回)</button>
         </div>
 
         <div id="description-box">
@@ -176,6 +175,7 @@
 
         let currentRow = 0;
         let gameOver = false;
+        let remainingHints = 5;
 
         const modeSelection = document.getElementById("mode-selection");
         const gameContent = document.getElementById("game-content");
@@ -212,6 +212,8 @@
             currentRow = 0;
             gameOver = false;
             guessedWords = []; 
+            remainingHints = 5;
+            updateHintButtonDisplay();
             
             modeSelection.style.display = "none";
             ruleBox.style.display = "none";
@@ -236,7 +238,6 @@
             
             shrineInput.disabled = false;
             btnSubmitGuess.disabled = false;
-            btnHint.disabled = false;
             btnGiveup.disabled = false;
             
             RANDOM_KANA = VALID_KANA.length > 0 ? VALID_KANA[Math.floor(Math.random() * VALID_KANA.length)] : "かみがも";
@@ -424,16 +425,37 @@
             }
         }
 
+        function updateHintButtonDisplay() {
+            btnHint.textContent = `ヒント (残り${remainingHints}回)`;
+            if (remainingHints <= 0 || gameOver) {
+                btnHint.disabled = true;
+                btnHint.style.backgroundColor = "#95a5a6";
+            } else {
+                btnHint.disabled = false;
+                btnHint.style.backgroundColor = "#2ecc71";
+            }
+        }
+
         btnHint.addEventListener("click", () => {
-            if (gameOver) return;
-            const hintPool = VALID_KANA.filter(kana => convertToLarge(kana) !== ANSWER);
+            if (gameOver || remainingHints <= 0) return;
+
+            const hintPool = VALID_KANA.filter(kana => {
+                const isAnswer = (convertToLarge(kana) === ANSWER);
+                const isGuessed = guessedWords.includes(convertToLarge(kana));
+                return !isAnswer && !isGuessed;
+            });
+
             if (hintPool.length > 0) {
                 const randomHintKana = hintPool[Math.floor(Math.random() * hintPool.length)];
                 const hintData = activeData[randomHintKana];
                 const hintName = hintData ? `${hintData.kanji}（${randomHintKana}）` : randomHintKana;
-                showMessage(`💡ヒント: リストには「${hintName}」などが含まれています！`);
+                
+                remainingHints--;
+                updateHintButtonDisplay();
+
+                showMessage(`💡ヒント: まだ入力されていない神社として「${hintName}」があります！`);
             } else {
-                showMessage("ヒントにする単語がリストにありません。");
+                showMessage("ヒントとして提示できる神社がもうありません。");
             }
             shrineInput.focus();
         });
@@ -453,8 +475,8 @@
             gameOver = true;
             shrineInput.disabled = true;
             btnSubmitGuess.disabled = true;
-            btnHint.disabled = true;
             btnGiveup.disabled = true;
+            updateHintButtonDisplay();
         }
 
         function updateCounter() {
@@ -471,7 +493,9 @@
                 
                 mapButtonContainer.innerHTML = "";
                 const mapBtn = document.createElement("a");
-                mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.kanji)}`;
+                
+                // 【変更】同じ名前の市外神社対策として、検索ワードの頭に「京都 」を追加
+                mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("京都 " + data.kanji)}`;
                 mapBtn.target = "_blank";
                 mapBtn.textContent = "🗺️ Google Mapsで場所を見る";
                 
