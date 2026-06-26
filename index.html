@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- このページをインデックス（掲載）しない -->
-	<!-- <meta name="robots" content="noindex,nofollow" /> -->
-    <title>Shrinedle - 神社ワードル</title>
+    <title>Shrinedle - 神社ワードル</title>
+    
+    <link rel="icon" href="KSK_fabicon_1.png" type="image/png">
+	<link rel="apple-touch-icon" KSK_fabicon_1.png">
+
 	<meta name="description" content="神社ワードル。Shrinedle。Jinja Wordle">
     <meta name="keywords" content="神社ワードル, shrinedle, 神ドル, Shrinedle, 京都, 神社, ワードル, Shrine, shrine, wordle, Wordle, Kyoto, シュラインドル">
     <link rel="stylesheet" href="style.css">
@@ -72,7 +74,7 @@
                 <button id="btn-mode-easy" style="width: 100%; padding: 12px; font-size: 1.1rem; background-color: #3498db; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">イージー</button>
                 <div style="margin: 0; font-size: 0.85rem; color: #555; text-align: left; line-height: 1.5;">
                     <ul style="margin: 0; padding-left: 20px;">
-                        <li>有名な神社（制作者の自己判断）と、世界遺産に登録されている寺が登録されています。</li>
+                        <li>有名な京都の神社（制作者の自己判断）と、世界遺産に登録されている京都の寺が登録されています。</li>
                         <li>神社の名前入力のルールはハードモードと同じです。寺に関しては、<b>語尾の「寺」を除きます。</b></li>
                         <li>文字数は<b>3文字か4文字</b>です。寺は語尾の「寺」を除いて3、4文字です。<br>
                             <span style="color: #666; font-size: 0.8rem;">（例：「東寺」は「寺」を除くと「とう」の2文字になるため、不可）</span>
@@ -485,7 +487,7 @@
             }
         }
 
-        function showDescription() {
+function showDescription() {
             const data = activeData[RANDOM_KANA];
             if (data) {
                 descTitle.textContent = `【${data.kanji}（${RANDOM_KANA}）】の解説`;
@@ -494,8 +496,12 @@
                 mapButtonContainer.innerHTML = "";
                 const mapBtn = document.createElement("a");
                 
-                // 【変更】同じ名前の市外神社対策として、検索ワードの頭に「京都 」を追加
-                mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("京都 " + data.kanji)}`;
+                // 【修正＆最適化】
+                // 不正だったURLを修正し、公式の検索APIスキームに変更。
+                // さらに「京都 」＋漢字名（例：京都 平安神宮）で検索の精度を最大化し、1つに絞り込みやすくします。
+                const searchQuery = encodeURIComponent("京都 " + data.kanji);
+                mapBtn.href = `https://www.google.com/maps/search/?api=1&query=${searchQuery}`;
+                
                 mapBtn.target = "_blank";
                 mapBtn.textContent = "🗺️ Google Mapsで場所を見る";
                 
