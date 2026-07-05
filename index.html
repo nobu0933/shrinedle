@@ -622,13 +622,13 @@
 
         btnSecretDiary.addEventListener("click", () => {
             generateDiary();
-            setGameVisibility(false); // ゲーム関連パーツを個別で非表示にする（階層を壊さない）
+            setGameVisibility(false); // ゲーム関連パーツを個別で非表示にする
             diarySection.style.display = "block";
         });
 
         btnCloseDiary.addEventListener("click", () => {
             diarySection.style.display = "none";
-            setGameVisibility(true); // 元の状態に戻す
+            setGameVisibility(true); // ゲーム関連パーツを個別で再表示
         });
 
         showModeSelection();
