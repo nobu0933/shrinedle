@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Shrinedle - 神社ワードル</title>
     
-    <link rel="icon" href="KSK_fabicon_1.png?v=2" type="image/png">
+    <link rel="icon" href="KSK_fabicon_1.png" type="image/png">
     <link rel="apple-touch-icon" href="KSK_fabicon_1.png?v=2">
-
 
 	<meta name="description" content="神社ワードル。Shrinedle。Jinja Wordle">
 	<meta name="keywords" content="神社ワードル, shrinedle, 神ドル, Shrinedle, 京都, 神社, ワードル, Shrine, shrine, wordle, Wordle, Kyoto, シュラインドル">
@@ -26,9 +25,13 @@
             justify-content: center;
             align-items: stretch;
             flex-direction: column;
+            margin-bottom: 15px;
         }
         .mode-box {
             flex: 1;
+        }
+        .challenge-box {
+            width: 100%;
         }
 
         /* パソコン表示（画面幅が768px以上）のときの設定 */
@@ -87,7 +90,7 @@
             <li style="margin-bottom: 8px;">「っ」などの小文字は「つ」のように大きな文字で出力されます。なお、入力の際は小文字のまま入力してください。<br>
                 <span style="color: #666; font-size: 0.85rem;">例）入力「きょうと」→ 出力「きようと」</span>
             </li>
-            <li style="margin-bottom: 8px;">入力は10回までできます。10回以内に答えの神社名を当てられたらゲームクリアです。</li>
+            <li style="margin-bottom: 8px;">入力回数は通常10回ですが、チャレンジモードは合計20回です。</li>
             <li style="margin-bottom: 8px;">ヒントボタンを押すと、リストにある神社の中からランダムに一つ提示してくれます。5回まで使えます。何も名前が浮かばない場合などに活用してください。なお、もちろん提示された神社を入力しなくても構いません。</li>
             <li style="margin-bottom: 0;">リタイアする場合は、リタイアボタンを押してください。正解が表示されます。</li>
         </ul>
@@ -95,8 +98,8 @@
 
     <div id="mode-selection" class="pc-wide-container" style="text-align: center; background-color: #ffffff; border: 2px solid #e0dbcd; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
         <h3 style="margin-top: 0; margin-bottom: 20px; color: #333; font-size: 1.2rem;">ゲームモードを選択</h3>
+        
         <div class="mode-flex-container">
-            
             <div class="mode-box" style="background: #f7f9fa; padding: 15px; border-radius: 6px; border: 1px solid #dbe3e6;">
                 <button id="btn-mode-easy" style="width: 100%; padding: 12px; font-size: 1.1rem; background-color: #3498db; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">イージー</button>
                 <div style="margin: 0; font-size: 0.85rem; color: #555; text-align: left; line-height: 1.5;">
@@ -122,7 +125,17 @@
                     </ul>
                 </div>
             </div>
-            
+        </div>
+
+        <div class="challenge-box" style="background: #fdfaf3; padding: 15px; border-radius: 6px; border: 1px solid #f3e5c8; box-sizing: border-box; text-align: left;">
+            <button id="btn-mode-challenge" style="width: 100%; padding: 12px; font-size: 1.1rem; background-color: #e67e22; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">チャレンジ</button>
+            <div style="margin: 0; font-size: 0.85rem; color: #555; line-height: 1.5;">
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li>回答する神社のリストはハードモードと同じです。</li>
+                    <li>全20回の回答制限の中で、何個正解できるか挑戦！</li>
+                    <li>正解すると次の問題へ。一度入力した神社は以後使えなくなります。</li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -199,9 +212,13 @@
         let currentMode = ""; 
         let activeData = {}; 
         let guessedWords = []; 
+        
+        // チャレンジモード用の管理変数
+        let challengeScore = 0;       // 現在の正解数
+        let challengeUsedWords = [];  // チャレンジ中に「一度でも入力された」すべてのひらがな単語
 
-        const VISUAL_MAX_LENGTH = 4;
-        const MAX_ATTEMPTS = 10;
+        let VISUAL_MAX_LENGTH = 4;
+        let MAX_ATTEMPTS = 10;
 
         let currentRow = 0;
         let gameOver = false;
@@ -243,12 +260,10 @@
             gameContent.style.display = "none";
         }
 
-        // ゲーム関連要素の表示・非表示を一括で切り替える関数（階層を維持するため）
         function setGameVisibility(visibleState) {
             const displayVal = visibleState ? "block" : "none";
             ruleBox.style.display = displayVal;
             modeSelection.style.display = displayVal;
-            // game-contentは、プレイ中かつゲーム画面表示時のみflexにする
             if (!visibleState) {
                 gameContent.style.display = "none";
             } else if (gameContent.hasAttribute("data-playing")) {
@@ -258,55 +273,32 @@
             }
         }
 
-        function initGame(mode) {
-            currentMode = mode;
-            currentRow = 0;
-            gameOver = false;
-            guessedWords = []; 
-            remainingHints = 5;
-            updateHintButtonDisplay();
-            
-            gameContent.setAttribute("data-playing", "true");
-            modeSelection.style.display = "none";
-            ruleBox.style.display = "none";
-            gameContent.style.display = "flex";
-
+        function setupNextQuestion() {
+            let pool = [];
             if (currentMode === "easy") {
-                currentModeDisplay.textContent = "イージー";
-                currentModeDisplay.style.backgroundColor = "#3498db";
-                activeData = SHRINE_DATA_EASY;
                 const kanaList = Object.keys(activeData);
-                VALID_KANA = kanaList.filter(w => {
+                pool = kanaList.filter(w => {
                     const len = convertToLarge(w).length;
                     return len === 3 || len === 4;
                 });
             } else {
-                currentModeDisplay.textContent = "ハード";
-                currentModeDisplay.style.backgroundColor = "#d9333f";
-                activeData = SHRINE_DATA;
                 const kanaList = Object.keys(activeData);
-                VALID_KANA = kanaList.filter(w => convertToLarge(w).length === 4);
+                pool = kanaList.filter(w => convertToLarge(w).length === 4);
             }
-            
-            shrineInput.disabled = false;
-            btnSubmitGuess.disabled = false;
-            btnGiveup.disabled = false;
-            
-            RANDOM_KANA = VALID_KANA.length > 0 ? VALID_KANA[Math.floor(Math.random() * VALID_KANA.length)] : "かみがも";
-            ANSWER = convertToLarge(RANDOM_KANA);
-            
-            shrineInput.value = "";
-            shrineInput.setAttribute("maxlength", VISUAL_MAX_LENGTH);
-            if (currentMode === "easy") {
-                shrineInput.placeholder = "ひらがな3〜4文字を入力";
+
+            if (currentMode === "challenge") {
+                pool = pool.filter(kana => !challengeUsedWords.includes(convertToLarge(kana)));
+            }
+
+            if (pool.length > 0) {
+                RANDOM_KANA = pool[Math.floor(Math.random() * pool.length)];
             } else {
-                shrineInput.placeholder = "ひらがな4文字を入力";
+                RANDOM_KANA = "かみがも"; 
             }
+            ANSWER = convertToLarge(RANDOM_KANA);
+        }
 
-            message.textContent = "";
-            descBox.style.display = "none";
-            mapButtonContainer.innerHTML = "";
-
+        function createBoardHTML() {
             board.innerHTML = "";
             board.style.display = "flex";
             board.style.flexDirection = "column";
@@ -330,6 +322,65 @@
                 }
                 board.appendChild(row);
             }
+        }
+
+        function initGame(mode) {
+            currentMode = mode;
+            currentRow = 0;
+            gameOver = false;
+            guessedWords = []; 
+            remainingHints = 5;
+            updateHintButtonDisplay();
+            
+            if (currentMode === "challenge") {
+                challengeScore = 0;
+                challengeUsedWords = [];
+                MAX_ATTEMPTS = 20; 
+                VISUAL_MAX_LENGTH = 4;
+            } else {
+                MAX_ATTEMPTS = 10; 
+            }
+            
+            gameContent.setAttribute("data-playing", "true");
+            modeSelection.style.display = "none";
+            ruleBox.style.display = "none";
+            gameContent.style.display = "flex";
+
+            if (currentMode === "easy") {
+                currentModeDisplay.textContent = "イージー";
+                currentModeDisplay.style.backgroundColor = "#3498db";
+                activeData = SHRINE_DATA_EASY;
+                VISUAL_MAX_LENGTH = 4;
+            } else if (currentMode === "hard") {
+                currentModeDisplay.textContent = "ハード";
+                currentModeDisplay.style.backgroundColor = "#d9333f";
+                activeData = SHRINE_DATA;
+                VISUAL_MAX_LENGTH = 4;
+            } else if (currentMode === "challenge") {
+                currentModeDisplay.textContent = `チャレンジ (正解: ${challengeScore})`;
+                currentModeDisplay.style.backgroundColor = "#e67e22";
+                activeData = SHRINE_DATA; 
+            }
+            
+            shrineInput.disabled = false;
+            btnSubmitGuess.disabled = false;
+            btnGiveup.disabled = false;
+            
+            setupNextQuestion();
+            
+            shrineInput.value = "";
+            shrineInput.setAttribute("maxlength", VISUAL_MAX_LENGTH);
+            if (currentMode === "easy") {
+                shrineInput.placeholder = "ひらがな3〜4文字を入力";
+            } else {
+                shrineInput.placeholder = "ひらがな4文字を入力";
+            }
+
+            message.textContent = "";
+            descBox.style.display = "none";
+            mapButtonContainer.innerHTML = "";
+
+            createBoardHTML();
 
             document.querySelectorAll(".key").forEach(btn => {
                 btn.removeAttribute("data-state");
@@ -345,12 +396,14 @@
             
             for (let j = 0; j < VISUAL_MAX_LENGTH; j++) {
                 const tile = document.getElementById(`tile-${currentRow}-${j}`);
-                if (currentText[j]) {
-                    tile.textContent = currentText[j];
-                    tile.setAttribute("data-state", "tbd");
-                } else {
-                    tile.textContent = "";
-                    tile.removeAttribute("data-state");
+                if (tile) {
+                    if (currentText[j]) {
+                        tile.textContent = currentText[j];
+                        tile.setAttribute("data-state", "tbd");
+                    } else {
+                        tile.textContent = "";
+                        tile.removeAttribute("data-state");
+                    }
                 }
             }
         }
@@ -413,13 +466,27 @@
                 return;
             }
 
-            const isValidWord = VALID_KANA.some(kana => convertToLarge(kana) === guess);
+            if (currentMode === "challenge" && challengeUsedWords.includes(guess)) {
+                showMessage("その神社はこれまでの問題で使用済みです");
+                return;
+            }
+
+            let globalPool = [];
+            if (currentMode === "easy") {
+                globalPool = Object.keys(SHRINE_DATA_EASY);
+            } else {
+                globalPool = Object.keys(SHRINE_DATA);
+            }
+            const isValidWord = globalPool.some(kana => convertToLarge(kana) === guess);
             if (!isValidWord) {
                 showMessage("リストにない単語です");
                 return;
             }
 
             guessedWords.push(guess);
+            if (currentMode === "challenge") {
+                challengeUsedWords.push(guess);
+            }
 
             let answerLetters = ANSWER.split(""); 
             let rowTiles = [];
@@ -429,27 +496,27 @@
             }
 
             for (let i = 0; i < VISUAL_MAX_LENGTH; i++) {
-                rowTiles[i].removeAttribute("data-state");
+                if (rowTiles[i]) rowTiles[i].removeAttribute("data-state");
             }
 
             for (let i = 0; i < guess.length; i++) {
                 if (guess[i] === ANSWER[i]) {
-                    rowTiles[i].setAttribute("data-state", "correct");
+                    if (rowTiles[i]) rowTiles[i].setAttribute("data-state", "correct");
                     updateKeyboard(guess[i], "correct");
                     answerLetters[i] = null;
                 }
             }
 
             for (let i = 0; i < guess.length; i++) {
-                if (rowTiles[i].getAttribute("data-state") === "correct") continue;
+                if (rowTiles[i] && rowTiles[i].getAttribute("data-state") === "correct") continue;
                 
                 const index = answerLetters.indexOf(guess[i]);
                 if (index > -1) {
-                    rowTiles[i].setAttribute("data-state", "present");
+                    if (rowTiles[i]) rowTiles[i].setAttribute("data-state", "present");
                     updateKeyboard(guess[i], "present");
                     answerLetters[index] = null;
                 } else {
-                    rowTiles[i].setAttribute("data-state", "absent");
+                    if (rowTiles[i]) rowTiles[i].setAttribute("data-state", "absent");
                     updateKeyboard(guess[i], "absent");
                 }
             }
@@ -458,9 +525,32 @@
             const kanjiName = correctData ? correctData.kanji : RANDOM_KANA;
 
             if (guess === ANSWER) {
-                showMessage(`お見事！正解は【${kanjiName}】です！ 🎉`);
-                showDescription();
-                endGame();
+                if (currentMode === "challenge") {
+                    challengeScore++;
+                    currentModeDisplay.textContent = `チャレンジ (正解: ${challengeScore})`;
+                    currentRow++;
+                    updateCounter();
+
+                    if (currentRow >= MAX_ATTEMPTS) {
+                        showMessage(`正解！【${kanjiName}】です。ここで20回終了！最終正解数: ${challengeScore}か所！ 🎉`);
+                        endGame();
+                    } else {
+                        alert(`正解！正解は【${kanjiName}】でした！次の神社へ進みます。`);
+                        
+                        guessedWords = [];
+                        document.querySelectorAll(".key").forEach(btn => btn.removeAttribute("data-state"));
+                        
+                        setupNextQuestion();
+                        shrineInput.value = "";
+                        shrineInput.placeholder = "ひらがな4文字を入力";
+                        message.textContent = "";
+                        shrineInput.focus();
+                    }
+                } else {
+                    showMessage(`お見事！正解は【${kanjiName}】です！ 🎉`);
+                    showDescription();
+                    endGame();
+                }
                 return;
             }
 
@@ -469,8 +559,12 @@
             updateCounter();
 
             if (currentRow >= MAX_ATTEMPTS) {
-                showMessage(`残念！正解は【${kanjiName}】でした。`);
-                showDescription();
+                if (currentMode === "challenge") {
+                    showMessage(`制限回数（20回）に達しました！ゲーム終了です。最終正解数: ${challengeScore}か所！`);
+                } else {
+                    showMessage(`残念！正解は【${kanjiName}】でした。`);
+                    showDescription();
+                }
                 endGame();
             } else {
                 shrineInput.focus();
@@ -491,10 +585,31 @@
         btnHint.addEventListener("click", () => {
             if (gameOver || remainingHints <= 0) return;
 
-            const hintPool = VALID_KANA.filter(kana => {
-                const isAnswer = (convertToLarge(kana) === ANSWER);
-                const isGuessed = guessedWords.includes(convertToLarge(kana));
-                return !isAnswer && !isGuessed;
+            let pool = [];
+            if (currentMode === "easy") {
+                pool = Object.keys(SHRINE_DATA_EASY);
+            } else {
+                pool = Object.keys(SHRINE_DATA);
+            }
+
+            const hintPool = pool.filter(kana => {
+                const targetLarge = convertToLarge(kana);
+                const isAnswer = (targetLarge === ANSWER);
+                
+                let isGuessed = guessedWords.includes(targetLarge);
+                if (currentMode === "challenge" && challengeUsedWords.includes(targetLarge)) {
+                    isGuessed = true;
+                }
+                
+                let isCorrectLen = true;
+                if (currentMode === "easy") {
+                    const len = targetLarge.length;
+                    isCorrectLen = (len === 3 || len === 4);
+                } else {
+                    isCorrectLen = (targetLarge.length === 4);
+                }
+
+                return !isAnswer && !isGuessed && isCorrectLen;
             });
 
             if (hintPool.length > 0) {
@@ -517,8 +632,12 @@
             if (confirm("本当に諦めますか？（正解が表示されます）")) {
                 const correctData = activeData[RANDOM_KANA];
                 const kanjiName = correctData ? correctData.kanji : RANDOM_KANA;
-                showMessage(`リタイアしました。正解は【${kanjiName}】でした。`);
-                showDescription();
+                if (currentMode === "challenge") {
+                    showMessage(`リタイアしました。この問題の正解は【${kanjiName}】でした。最終正解数: ${challengeScore}か所`);
+                } else {
+                    showMessage(`リタイアしました。正解は【${kanjiName}】でした。`);
+                    showDescription();
+                }
                 endGame();
             }
         });
@@ -534,10 +653,14 @@
         function updateCounter() {
             if (currentRow < MAX_ATTEMPTS) {
                 counter.textContent = `試行: ${currentRow + 1} / ${MAX_ATTEMPTS}`;
+            } else {
+                counter.textContent = `試行: ${MAX_ATTEMPTS} / ${MAX_ATTEMPTS}`;
             }
         }
 
         function showDescription() {
+            if (currentMode === "challenge") return;
+
             const data = activeData[RANDOM_KANA];
             if (data) {
                 descTitle.textContent = `【${data.kanji}（${RANDOM_KANA}）】の解説`;
@@ -583,13 +706,14 @@
 
         function showMessage(msg) {
             message.textContent = msg;
-            if (msg.includes("文字") || msg.includes("リストにない") || msg.includes("すでに回答")) {
+            if (msg.includes("文字") || msg.includes("リストにない") || msg.includes("すでに回答") || msg.includes("使用済み")) {
                 setTimeout(() => { if (message.textContent === msg) message.textContent = ""; }, 3000);
             }
         }
         
         document.getElementById("btn-mode-easy").addEventListener("click", () => initGame("easy"));
         document.getElementById("btn-mode-hard").addEventListener("click", () => initGame("hard"));
+        document.getElementById("btn-mode-challenge").addEventListener("click", () => initGame("challenge"));
 
         document.getElementById("btn-reset").addEventListener("click", () => {
             if (confirm("現在のモードのまま、新しくゲームを始めますか？")) {
@@ -604,10 +728,7 @@
             }
         });
 
-        // ==========================================
-        // 隠しページ（制作者日記）の生成と切り替え処理
-        // ==========================================
-        function generateDiary() {
+function generateDiary() {
             if (typeof DIARY_DATA !== 'undefined' && Array.isArray(DIARY_DATA)) {
                 diaryArticlesContainer.innerHTML = DIARY_DATA.map(item => `
                     <div style="margin-bottom: 25px;">
@@ -618,7 +739,7 @@
             } else {
                 diaryArticlesContainer.innerHTML = '<p style="color: #999;">日記データが見つかりませんでした。</p>';
             }
-        }
+        } // 👈 ここは普通の関数なので「}`」で閉じます
 
         btnSecretDiary.addEventListener("click", () => {
             generateDiary();
