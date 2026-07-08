@@ -6,7 +6,7 @@
 	<title>Shrinedle - 神社ワードル</title>
     
     <link rel="icon" href="KSK_fabicon_1.png" type="image/png">
-    <link rel="apple-touch-icon" href="KSK_fabicon_1.png?v=2">
+    <link rel="apple-touch-icon" href="KSK_logo.png?v=2">
 
 	<meta name="description" content="神社ワードル。Shrinedle。Jinja Wordle">
 	<meta name="keywords" content="神社ワードル, shrinedle, 神ドル, Shrinedle, 京都, 神社, ワードル, Shrine, shrine, wordle, Wordle, Kyoto, シュラインドル">
@@ -58,6 +58,110 @@
         .logo-btn:hover {
             opacity: 0.8;
         }
+
+        /* チーター確認用のカスタムポップアップスタイル */
+        .cheater-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 20000;
+            display: flex; justify-content: center; align-items: center;
+            padding: 20px; box-sizing: border-box;
+        }
+        .cheater-modal-content {
+            background: #111;
+            color: #fff;
+            border: 2px solid #ff3333;
+            border-radius: 12px;
+            padding: 40px 30px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2);
+            text-align: center;
+        }
+        .cheater-modal-title {
+            font-size: 1.8rem;
+            color: #ff3333;
+            font-weight: bold;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+        .cheater-modal-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .cheater-modal-btn {
+            padding: 12px 35px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .cheater-modal-btn.btn-yes {
+            background-color: #ff3333;
+            color: white;
+        }
+        .cheater-modal-btn.btn-yes:hover {
+            background-color: #cc0000;
+        }
+        .cheater-modal-btn.btn-no {
+            background-color: #555;
+            color: white;
+        }
+        .cheater-modal-btn.btn-no:hover {
+            background-color: #444;
+        }
+
+        /* 通常の昇段・降段通知用ポップアップスタイル */
+        .rank-notice-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 25000;
+            display: flex; justify-content: center; align-items: center;
+            padding: 20px; box-sizing: border-box;
+        }
+        .rank-notice-content {
+            background: white;
+            color: #333;
+            border-radius: 12px;
+            padding: 30px 25px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            text-align: center;
+            animation: rankNoticePop 0.3s ease-out;
+        }
+        @keyframes rankNoticePop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .rank-notice-title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .rank-notice-title.up { color: #e67e22; }
+        .rank-notice-title.down { color: #2c3e50; }
+        .rank-notice-body {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .rank-notice-btn {
+            padding: 10px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            background-color: #d9333f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -67,8 +171,9 @@
             <h2 style="color: #d9333f; margin-top: 0; font-size: 1.8rem; margin-bottom: 10px;">Shrinedle</h2>
             <p style="font-weight: bold; color: #333; margin-bottom: 25px; font-size: 1.1rem;">プレイヤー名を設定してください</p>
             <input type="text" id="player-name-input" maxlength="10" placeholder="名前を入力（10文字以内）" style="width: 100%; padding: 12px; font-size: 1.1rem; border: 2px solid #ccc; border-radius: 6px; text-align: center; box-sizing: border-box; margin-bottom: 15px;">
-            <button id="btn-save-name" style="width: 100%; padding: 12px; background-color: #d9333f; color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.2s;">登録して始める</button>
-            <p style="color: #7f8c8d; font-size: 0.85rem; margin-top: 20px; line-height: 1.4;">※ この名前やプレイ記録が外部に公開されることはありません。<br>あなたの端末内にのみ安全に保存されます。</p>
+            <button id="btn-save-name" style="width: 100%; padding: 12px; background-color: #d9333f; color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.2s; margin-bottom: 10px;">登録して始める</button>
+            <button id="btn-skip-name" style="width: 100%; padding: 12px; background-color: #7f8c8d; color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.2s;">名前を登録しない</button>
+            <p style="color: #7f8c8d; font-size: 0.85rem; margin-top: 20px; line-height: 1.4;">※ 名前を登録しない場合でもゲームを始められます。<br>名前は戦績画面からいつでも登録・変更可能です。</p>
         </div>
     </div>
 
@@ -79,28 +184,37 @@
                 <button id="btn-close-stats" style="padding: 6px 12px; background-color: #555; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">閉じる</button>
             </div>
             
+            <div style="margin-bottom: 15px; background: #fff5f5; padding: 10px; border-radius: 6px; border: 1px solid #ffd1d1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <span style="font-weight: bold; color: #d9333f; font-size: 1.1rem;">現在の段位認定： <span id="stat-current-rank" style="font-size: 1.25rem;">5級</span></span>
+                <button id="btn-admit-cheat" style="display: none; padding: 4px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: background-color 0.2s;">不正を認める</button>
+            </div>
+
             <div style="margin-bottom: 25px;">
                 <h4 style="margin: 0 0 10px 0; color: #3498db; border-left: 4px solid #3498db; padding-left: 8px;">🔹 イージーモード</h4>
                 <p style="margin: 5px 0; font-size: 0.95rem;">累計正解数: <b id="stat-easy-wins" style="font-size: 1.1rem; color: #333;">0</b> か所</p>
                 <p style="margin: 5px 0; font-size: 0.95rem;">現在 / 最高 連続正解数: <b id="stat-easy-streak" style="font-size: 1.1rem; color: #333;">0 / 0</b> 連勝</p>
-                <p style="margin: 5px 0; font-size: 0.95rem;">正解までの平均入力神社数: <b id="stat-easy-avg-attempts" style="font-size: 1.1rem; color: #333;">0.0</b> 回</p>
+                <p style="margin: 5px 0; font-size: 0.95rem;">正解までの平均入力神社数 (通算): <b id="stat-easy-avg-attempts" style="font-size: 1.1rem; color: #333;">0.0</b> 回</p>
+                <p style="margin: 5px 0; font-size: 0.95rem; color: #666;">正解までの平均入力神社数 (<b>直近10回</b>): <b id="stat-easy-recent-avg-attempts" style="font-size: 1.1rem; color: #3498db;">0.0</b> 回</p>
             </div>
 
             <div style="margin-bottom: 25px;">
                 <h4 style="margin: 0 0 10px 0; color: #d9333f; border-left: 4px solid #d9333f; padding-left: 8px;">🔸 ハードモード</h4>
                 <p style="margin: 5px 0; font-size: 0.95rem;">累計正解数: <b id="stat-hard-wins" style="font-size: 1.1rem; color: #333;">0</b> か所</p>
                 <p style="margin: 5px 0; font-size: 0.95rem;">現在 / 最高 連続正解数: <b id="stat-hard-streak" style="font-size: 1.1rem; color: #333;">0 / 0</b> 連勝</p>
-                <p style="margin: 5px 0; font-size: 0.95rem;">正解までの平均入力神社数: <b id="stat-hard-avg-attempts" style="font-size: 1.1rem; color: #333;">0.0</b> 回</p>
+                <p style="margin: 5px 0; font-size: 0.95rem;">正解までの平均入力神社数 (通算): <b id="stat-hard-avg-attempts" style="font-size: 1.1rem; color: #333;">0.0</b> 回</p>
+                <p style="margin: 5px 0; font-size: 0.95rem; color: #666;">正解までの平均入力神社数 (<b>直近10回</b>): <b id="stat-hard-recent-avg-attempts" style="font-size: 1.1rem; color: #d9333f;">0.0</b> 回</p>
             </div>
 
             <div style="margin-bottom: 20px;">
                 <h4 style="margin: 0 0 10px 0; color: #e67e22; border-left: 4px solid #e67e22; padding-left: 8px;">🔥 チャレンジモード</h4>
+                <p style="margin: 5px 0; font-size: 0.95rem;">プレイ数 (ゲーム回数): <b id="stat-challenge-plays" style="font-size: 1.1rem; color: #333;">0</b> 回</p>
                 <p style="margin: 5px 0; font-size: 0.95rem;">最高正解数: <b id="stat-challenge-max" style="font-size: 1.1rem; color: #333;">0</b> か所</p>
-                <p style="margin: 5px 0; font-size: 0.95rem;">1ゲームあたりの平均正解数: <b id="stat-challenge-avg-score" style="font-size: 1.1rem; color: #333;">0.0</b> か所</p>
+                <p style="margin: 5px 0; font-size: 0.95rem;">1ゲームあたりの平均正解数 (通算): <b id="stat-challenge-avg-score" style="font-size: 1.1rem; color: #333;">0.0</b> か所</p>
+                <p style="margin: 5px 0; font-size: 0.95rem; color: #666;">1ゲームあたりの平均正解数 (<b>直近10回</b>): <b id="stat-challenge-recent-avg-score" style="font-size: 1.1rem; color: #e67e22;">0.0</b> か所</p>
             </div>
 
             <div style="text-align: right; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                <button id="btn-change-name-trigger" style="padding: 6px 12px; background-color: #7f8c8d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">プレイヤー名を変更する</button>
+                <button id="btn-change-name-trigger" style="padding: 6px 12px; background-color: #7f8c8d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">プレイヤー名を変更・登録する</button>
             </div>
         </div>
     </div>
@@ -117,8 +231,9 @@
                 </button>
             </div>
         </div>
-        <div id="header-player-panel" style="text-align: right; border-left: 2px solid #e0dbcd; padding-left: 15px; min-width: 120px;">
-            <div id="display-player-name" style="font-weight: bold; color: #333; font-size: 1.05rem; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">ゲスト さん</div>
+        <div id="header-player-panel" style="text-align: right; border-left: 2px solid #e0dbcd; padding-left: 15px; min-width: 140px;">
+            <div id="display-player-name" style="font-weight: bold; color: #333; font-size: 1.05rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">ゲスト さん</div>
+            <div id="display-player-rank" style="font-size: 1.15rem; color: #d9333f; font-weight: bold; margin-bottom: 8px; white-space: nowrap;">現在の段位：5級</div>
             <button id="btn-view-stats" style="padding: 6px 12px; background-color: #d9333f; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap;">自分の記録を見る</button>
         </div>
     </header>
@@ -230,7 +345,7 @@
                 <div class="key-row"><button class="key" data-key="わ">わ</button><div style="grid-column: 3;"><button class="key" data-key="を">を</button></div><div style="grid-column: 5;"><button class="key" data-key="ん">ん</button></div></div>
                 <div class="key-row"><button class="key" data-key="が">が</button><button class="key" data-key="ぎ">ぎ</button><button class="key" data-key="ぐ">ぐ</button><button class="key" data-key="げ">げ</button><button class="key" data-key="ご">ご</button></div>
                 <div class="key-row"><button class="key" data-key="ざ">ざ</button><button class="key" data-key="じ">じ</button><button class="key" data-key="ず">ず</button><button class="key" data-key="ぜ">ぜ</button><button class="key" data-key="ぞ">ぞ</button></div>
-                <div class="key-row"><button class="key" data-key="だ">だ</button><button class="key" data-key="ぢ">ぢ</button><button class="key" data-key="づ">づ</button><button class="key" data-key="て">て</button><button class="key" data-key="ど">ど</button></div>
+                <div class="key-row"><button class="key" data-key="だ">だ</button><button class="key" data-key="ぢ">ぢ</button><button class="key" data-key="づ">づ</button><button class="key" data-key="で">で</button><button class="key" data-key="ど">ど</button></div>
                 <div class="key-row"><button class="key" data-key="ば">ば</button><button class="key" data-key="び">び</button><button class="key" data-key="ぶ">ぶ</button><button class="key" data-key="べ">べ</button><button class="key" data-key="ぼ">ぼ</button></div>
                 <div class="key-row"><button class="key" data-key="ぱ">ぱ</button><button class="key" data-key="ぴ">ぴ</button><button class="key" data-key="ぷ">ぷ</button><button class="key" data-key="ぺ">ぺ</button><button class="key" data-key="ぽ">ぽ</button></div>
                 <div class="key-row"><button class="key" data-key="っ">っ</button><button class="key" data-key="ゃ">ゃ</button><button class="key" data-key="ゅ">ゅ</button><button class="key" data-key="ょ">ょ</button><button class="key" data-key="ー">ー</button></div>
@@ -262,9 +377,8 @@
         let activeData = {}; 
         let guessedWords = []; 
         
-        // チャレンジモード用の管理変数
-        let challengeScore = 0;       // 現在の正解数
-        let challengeUsedWords = [];  // チャレンジ中に「一度でも入力された」すべてのひらがな単語
+        let challengeScore = 0;       
+        let challengeUsedWords = [];  
 
         let VISUAL_MAX_LENGTH = 4;
         let MAX_ATTEMPTS = 10;
@@ -273,48 +387,217 @@
         let gameOver = false;
         let remainingHints = 5;
 
-        // --- ローカルストレージ（記録）管理用の設定 ---
+        let previousRankName = ""; 
+        let isCheaterLocked = false; // チーター段位を固定化するための管理用内部フラグ
+
         let pData = {
             name: "",
-            easy: { wins: 0, currentStreak: 0, maxStreak: 0, totalAttempts: 0, winCountForAvg: 0 },
-            hard: { wins: 0, currentStreak: 0, maxStreak: 0, totalAttempts: 0, winCountForAvg: 0 },
-            challenge: { maxScore: 0, totalGames: 0, totalScoreSum: 0 }
+            isGuestSkippedName: false,
+            easy: { wins: 0, currentStreak: 0, maxStreak: 0, totalAttempts: 0, winCountForAvg: 0, recentAttempts: [] },
+            hard: { wins: 0, currentStreak: 0, maxStreak: 0, totalAttempts: 0, winCountForAvg: 0, recentAttempts: [] },
+            challenge: { maxScore: 0, totalGames: 0, totalScoreSum: 0, recentScores: [] },
+            hasReachedLifetimeMeijin: false 
         };
 
-        function loadPlayerData() {
-            const saved = localStorage.getItem("shrinedle_player_data");
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    // 古い形式からの互換性を保ちつつマージ
-                    pData = Object.assign({}, pData, parsed);
-                } catch(e) {
-                    console.error(e);
-                }
-            }
-        }
+const RANK_PRIORITY = {
+    "5級": 1, "4級": 2, "3級": 3, "2級": 4, "1級": 5,
+    "初段": 6, "二段": 7, "三段": 8, "四段": 9, "五段": 10,
+    "名人": 11, "永世名人（最高段位です）": 12, "チーター": 99
+};
 
-        function savePlayerData() {
-            localStorage.setItem("shrinedle_player_data", JSON.stringify(pData));
-            updateHeaderUI();
+function loadPlayerData() {
+    const saved = localStorage.getItem("shrinedle_player_data");
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+	    if (parsed.easy && !parsed.easy.recentAttempts) parsed.easy.recentAttempts = [];
+            if (parsed.hard && !parsed.hard.recentAttempts) parsed.hard.recentAttempts = [];
+            if (parsed.challenge && !parsed.challenge.recentScores) parsed.challenge.recentScores = [];
+            pData = Object.assign({}, pData, parsed);
+        } catch(e) {
+            console.error(e);
+        }
+    }
+    // 読み込み時に以前の最高スコアが16以上であれば、チーター状態を固定化します
+    if (pData.challenge && pData.challenge.maxScore >= 16) {
+        isCheaterLocked = true;
+    }
+    previousRankName = calculateRank(); 
+}
+
+function savePlayerData() {
+    const beforeRank = previousRankName;
+    const afterRank = calculateRank();
+
+    // 永世名人フラグの管理
+    if (beforeRank === "永世名人（最高段位です）" || pData.hasReachedLifetimeMeijin) {
+        if (afterRank !== "チーター" && RANK_PRIORITY[afterRank] < RANK_PRIORITY["永世名人（最高段位です）"]) {
+            pData.hasReachedLifetimeMeijin = true;
+        }
+    }
+
+    const finalRank = afterRank;
+
+    // データの保存とUI更新
+    localStorage.setItem("shrinedle_player_data", JSON.stringify(pData));
+    updateHeaderUI();
+
+    // --- ここから修正：RANK_PRIORITYの数値（1〜99）を基準に比較してポップアップを表示 ---
+    if (beforeRank !== finalRank) {
+        const beforePriority = RANK_PRIORITY[beforeRank] || 0;
+        const finalPriority = RANK_PRIORITY[finalRank] || 0;
+
+        if (finalPriority > beforePriority) {
+            // 普通の昇段だけでなく、チーター（99）になった時も数値が跳ね上がるので必ずここを通ります！
+            showRankNoticeModal("🎉 昇段・昇級通知", `おめでとうございます！<br>実力が認められ、段位が<strong>【${beforeRank}】</strong>から<strong>【${finalRank}】</strong>に上がりました！`, "up");
+        } else if (finalPriority < beforePriority) {
+            // 通常の降段処理
+            showRankNoticeModal("📉 降段・降級通知", `条件が満たされなくなったため、段位が<strong>【${beforeRank}】</strong>から<strong>【${finalRank}】</strong>に変更されました。`, "down");
+        }
+    }
+    // ----------------------------------------------------------------------------------
+
+    previousRankName = finalRank; 
+}
+
+        function calculateRank() {
+            // チーターロックがかかっている場合は、降段処理を完全に防ぎ、チーターを返します
+            if (isCheaterLocked) {
+                return "チーター";
+            }
+
+            const eWins = pData.easy.wins || 0;
+            const hWins = pData.hard.wins || 0;
+            const hTotal = pData.hard.totalAttempts || 0;
+            const hWinCount = pData.hard.winCountForAvg || 0;
+            const cMax = pData.challenge.maxScore || 0;
+            const cPlays = pData.challenge.totalGames || 0;
+            const cTotalSum = pData.challenge.totalScoreSum || 0;
+
+            const hRecent = pData.hard.recentAttempts || [];
+            const cRecent = pData.challenge.recentScores || [];
+
+	    const eRecent = pData.easy.recentAttempts || [];
+   	    const eRecent10 = eRecent.slice(-10);
+   	    const easyRecentAvg = eRecent10.length > 0 ? (eRecent10.reduce((a,b)=>a+b,0)/eRecent10.length).toFixed(1) : "0.0";
+    // タイミングによって要素がまだ無い場合のエラーを防ぐif文付き
+  	    const easyEl = document.getElementById("stat-easy-recent-avg-attempts");
+ 	    if (easyEl) easyEl.textContent = easyRecentAvg;
+
+            const hAvgAll = hWinCount > 0 ? (hTotal / hWinCount) : 999;
+            const cAvgAll = cPlays > 0 ? (cTotalSum / cPlays) : 0;
+
+            const hRecent20 = hRecent.slice(-20);
+            const hAvgRecent20 = hRecent20.length > 0 ? (hRecent20.reduce((a, b) => a + b, 0) / hRecent20.length) : 999;
+
+            const cRecent50 = cRecent.slice(-50);
+            const cAvgRecent50 = cRecent50.length > 0 ? (cRecent50.reduce((a, b) => a + b, 0) / cRecent50.length) : 0;
+
+            const hRecent100 = hRecent.slice(-100);
+            const hAvgRecent100 = hRecent100.length > 0 ? (hRecent100.reduce((a, b) => a + b, 0) / hRecent100.length) : 999;
+
+            const cRecent100 = cRecent.slice(-100);
+            const cAvgRecent100 = cRecent100.length > 0 ? (cRecent100.reduce((a, b) => a + b, 0) / cRecent100.length) : 0;
+
+            if (cMax >= 16) {
+                isCheaterLocked = true; // 初めてチーターに達した際にロックを有効にします
+                return "チーター";
+            }
+
+            if (pData.hasReachedLifetimeMeijin || 
+                (hWins >= 200 && hAvgAll <= 5) ||
+                (cPlays >= 200 && cAvgAll >= 5 && cMax >= 7)
+            ) {
+                pData.hasReachedLifetimeMeijin = true; 
+                return "永世名人（最高段位です）";
+            }
+
+            if (
+                (hWins >= 100 && hAvgRecent100 <= 5) ||
+                (cPlays >= 100 && cAvgRecent100 >= 5 && cMax >= 7)
+            ) return "名人";
+
+            if (
+                (hWins >= 70 && hAvgRecent20 <= 5) ||
+                (cPlays >= 50 && cAvgRecent50 >= 5 && cMax >= 7)
+            ) return "五段";
+
+            if (
+                (hWins >= 60 && hAvgRecent100 <= 5) || 
+                (hWins >= 60 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 5) ||  
+                (cPlays >= 40 && cRecent.slice(-20).length > 0 && (cRecent.slice(-20).reduce((a,b)=>a+b,0)/cRecent.slice(-20).length) >= 5 && cMax >= 7)
+            ) return "四段";
+
+            if (
+                (hWins >= 50 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 6) ||
+                (cPlays >= 30 && cRecent.slice(-10).length > 0 && (cRecent.slice(-10).reduce((a,b)=>a+b,0)/cRecent.slice(-10).length) >= 5 && cMax >= 6)
+            ) return "三段";
+
+            if (
+                (hWins >= 40 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 7) ||
+                (cPlays >= 20 && cRecent.slice(-10).length > 0 && (cRecent.slice(-10).reduce((a,b)=>a+b,0)/cRecent.slice(-10).length) >= 4 && cMax >= 6)
+            ) return "二段";
+
+            if (
+                (hWins >= 30 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 8) ||
+                (cPlays >= 10 && cRecent.slice(-10).length > 0 && (cRecent.slice(-10).reduce((a,b)=>a+b,0)/cRecent.slice(-10).length) >= 3 && cMax >= 6)
+            ) return "初段";
+
+            if (eWins >= 40 || hWins >= 20 || cMax >= 6) return "1級";
+            if (eWins >= 30 || hWins >= 15 || cMax >= 5) return "2級";
+            if (eWins >= 20 || hWins >= 10 || cMax >= 4) return "3級";
+            if (eWins >= 10 || hWins >= 5 || cMax >= 3) return "4級";
+
+            return "5級";
         }
 
         function updateHeaderUI() {
             const nameDiv = document.getElementById("display-player-name");
+            const rankDiv = document.getElementById("display-player-rank");
             if (pData.name) {
                 nameDiv.textContent = pData.name + " さん";
+                nameDiv.style.display = "block";
             } else {
-                nameDiv.textContent = "ゲスト さん";
+                nameDiv.textContent = "";
+                nameDiv.style.display = "none";
             }
+            rankDiv.textContent = "現在の段位：" + calculateRank();
         }
 
         function checkPlayerNameSetup() {
-            if (!pData.name) {
+            if (!pData.name && !pData.isGuestSkippedName) {
                 document.getElementById("name-setup-screen").style.display = "flex";
             } else {
                 document.getElementById("name-setup-screen").style.display = "none";
                 updateHeaderUI();
             }
+        }
+
+        function showRankNoticeModal(titleText, bodyHtml, type) {
+            const overlay = document.createElement("div");
+            overlay.className = "rank-notice-overlay";
+
+            const content = document.createElement("div");
+            content.className = "rank-notice-content";
+
+            const title = document.createElement("div");
+            title.className = `rank-notice-title ${type}`;
+            title.textContent = titleText;
+
+            const body = document.createElement("div");
+            body.className = "rank-notice-body";
+            body.innerHTML = bodyHtml;
+
+            const btnClose = document.createElement("button");
+            btnClose.className = "rank-notice-btn";
+            btnClose.textContent = "確認";
+            btnClose.onclick = () => { overlay.remove(); };
+
+            content.appendChild(title);
+            content.appendChild(body);
+            content.appendChild(btnClose);
+            overlay.appendChild(content);
+            document.body.appendChild(overlay);
         }
 
         const modeSelection = document.getElementById("mode-selection");
@@ -333,7 +616,6 @@
         const btnGiveup = document.getElementById("btn-giveup");
         const ruleBox = document.getElementById("rule-box");
 
-        // 隠しエリア関連のDOM
         const diarySection = document.getElementById("diary-section");
         const btnSecretDiary = document.getElementById("btn-secret-diary");
         const btnCloseDiary = document.getElementById("btn-close-diary");
@@ -536,7 +818,6 @@
             }
         });
 
-        // ランクに応じたメッセージを取得する関数
         function getRankMessage(score) {
             if (score >= 11) return ""; 
             if (score >= 7)  return "すごすぎる。プロShrinedlerになってください。";
@@ -545,7 +826,6 @@
             return "もっと京都の神社を知りましょう。";
         }
 
-        // 11回以上正解した時の、他のボタン操作を完全ブロックするポップアップ風モーダル関数
         function showOathModal(endGameCallback, defaultMsg) {
             const modalOverlay = document.createElement("div");
             modalOverlay.className = "oath-modal-overlay";
@@ -571,15 +851,27 @@
                 modalOverlay.remove(); 
                 showMessage(defaultMsg + "\n\n🌟 恐ろしいくらいの爆運ですね！");
                 
-                // 「はい」の場合はチャレンジの最高スコア更新処理を行う
                 if (challengeScore > pData.challenge.maxScore) {
                     pData.challenge.maxScore = challengeScore;
                 }
                 pData.challenge.totalGames++;
                 pData.challenge.totalScoreSum += challengeScore;
+
+                if (!pData.challenge.recentScores) pData.challenge.recentScores = [];
+                pData.challenge.recentScores.push(challengeScore);
+                if (pData.challenge.recentScores.length > 100) {
+                    pData.challenge.recentScores.shift();
+                }
+
                 savePlayerData();
 
-                endGameCallback();
+                if (pData.challenge.maxScore >= 16) {
+                    showCheaterVerificationModal(() => {
+                        endGameCallback();
+                    });
+                } else {
+                    endGameCallback();
+                }
             };
             
             const btnNo = document.createElement("button");
@@ -587,10 +879,8 @@
             btnNo.textContent = "いいえ";
             btnNo.onclick = () => {
                 modalOverlay.remove();
-                // 画面全体を真っ暗にする
                 document.body.classList.add("blackout-effect");
                 
-                // 1秒後に「自分の胸に手を当ててみてください」を確実に最前面に白文字で表示
                 setTimeout(() => {
                     const blackoutMsg = document.createElement("div");
                     blackoutMsg.className = "oath-blackout-text";
@@ -598,11 +888,16 @@
                     document.body.appendChild(blackoutMsg);
                 }, 1000);
 
-                // 「いいえ」の場合は最高スコア更新から除外するが、ゲーム数とスコア平均の分母分子には加算する
                 pData.challenge.totalGames++;
                 pData.challenge.totalScoreSum += challengeScore;
-                savePlayerData();
 
+                if (!pData.challenge.recentScores) pData.challenge.recentScores = [];
+                pData.challenge.recentScores.push(challengeScore);
+                if (pData.challenge.recentScores.length > 100) {
+                    pData.challenge.recentScores.shift();
+                }
+
+                savePlayerData();
                 endGameCallback();
             };
             
@@ -709,16 +1004,26 @@
                         if (challengeScore >= 11) {
                             showOathModal(endGame, `正解！【${kanjiName}】です。ゲーム終了です。\n最終正解数: ${challengeScore}か所！`);
                         } else {
-                            // 通常の記録保存
                             if (challengeScore > pData.challenge.maxScore) {
                                 pData.challenge.maxScore = challengeScore;
                             }
                             pData.challenge.totalGames++;
                             pData.challenge.totalScoreSum += challengeScore;
-                            savePlayerData();
 
+                            if (!pData.challenge.recentScores) pData.challenge.recentScores = [];
+                            pData.challenge.recentScores.push(challengeScore);
+                            if (pData.challenge.recentScores.length > 100) {
+                                pData.challenge.recentScores.shift();
+                            }
+
+                            savePlayerData();
                             showMessage(`正解！【${kanjiName}】です。ゲーム終了です。\n最終正解数: ${challengeScore}か所！\n${rankMsg}`);
-                            endGame();
+
+                            if (pData.challenge.maxScore >= 16) {
+                                showCheaterVerificationModal(() => { endGame(); });
+                            } else {
+                                endGame();
+                            }
                         }
                     } else {
                         alert(`正解！正解は【${kanjiName}】でした！次の神社へ進みます。`);
@@ -733,16 +1038,29 @@
                         shrineInput.focus();
                     }
                 } else {
-                    // イージー・ハードモードの正解データ記録
                     pData[currentMode].wins++;
                     pData[currentMode].currentStreak++;
                     if (pData[currentMode].currentStreak > pData[currentMode].maxStreak) {
                         pData[currentMode].maxStreak = pData[currentMode].currentStreak;
                     }
-                    pData[currentMode].totalAttempts += (currentRow + 1); // 現在の試行数（1始まりベース）
+                    pData[currentMode].totalAttempts += (currentRow + 1);
                     pData[currentMode].winCountForAvg++;
-                    savePlayerData();
 
+		   if (currentMode === "easy") {
+                        if (!pData.easy.recentAttempts) pData.easy.recentAttempts = [];
+                        pData.easy.recentAttempts.push(currentRow + 1);
+                        if (pData.easy.recentAttempts.length > 100) {
+                            pData.easy.recentAttempts.shift(); 
+                        }
+                    } else if (currentMode === "hard") {
+                        if (!pData.hard.recentAttempts) pData.hard.recentAttempts = [];
+                        pData.hard.recentAttempts.push(currentRow + 1);
+                        if (pData.hard.recentAttempts.length > 100) {
+                            pData.hard.recentAttempts.shift(); 
+                        }
+                    }
+
+                    savePlayerData();
                     showMessage(`お見事！正解は【${kanjiName}】です！ 🎉`);
                     showDescription();
                     endGame();
@@ -752,6 +1070,7 @@
 
             currentRow++;
             shrineInput.value = "";
+            renderTiles();
             updateCounter();
 
             if (currentRow >= MAX_ATTEMPTS) {
@@ -766,16 +1085,25 @@
                         }
                         pData.challenge.totalGames++;
                         pData.challenge.totalScoreSum += challengeScore;
-                        savePlayerData();
 
+                        if (!pData.challenge.recentScores) pData.challenge.recentScores = [];
+                        pData.challenge.recentScores.push(challengeScore);
+                        if (pData.challenge.recentScores.length > 100) {
+                            pData.challenge.recentScores.shift();
+                        }
+
+                        savePlayerData();
                         showMessage(`制限回数（20回）に達しました！ゲーム終了です。\n最終正解数: ${challengeScore}か所！\n${rankMsg}`);
-                        endGame();
+                        
+                        if (pData.challenge.maxScore >= 16) {
+                            showCheaterVerificationModal(() => { endGame(); });
+                        } else {
+                            endGame();
+                        }
                     }
                 } else {
-                    // イージー・ハード失敗時は連勝ストリークをリセット
                     pData[currentMode].currentStreak = 0;
                     savePlayerData();
-
                     showMessage(`残念！正解は【${kanjiName}】でした。`);
                     showDescription();
                     endGame();
@@ -833,7 +1161,6 @@
                 
                 remainingHints--;
                 updateHintButtonDisplay();
-
                 showMessage(`💡ヒント: まだ入力されていない神社として「${hintName}」があります！`);
             } else {
                 showMessage("ヒントとして提示できる神社がもうありません。");
@@ -857,16 +1184,25 @@
                         }
                         pData.challenge.totalGames++;
                         pData.challenge.totalScoreSum += challengeScore;
-                        savePlayerData();
 
+                        if (!pData.challenge.recentScores) pData.challenge.recentScores = [];
+                        pData.challenge.recentScores.push(challengeScore);
+                        if (pData.challenge.recentScores.length > 100) {
+                            pData.challenge.recentScores.shift();
+                        }
+
+                        savePlayerData();
                         showMessage(`リタイアしました。この問題の正解は【${kanjiName}】でした。\nゲーム終了です。\n最終正解数: ${challengeScore}か所\n${rankMsg}`);
-                        endGame();
+                        
+                        if (pData.challenge.maxScore >= 16) {
+                            showCheaterVerificationModal(() => { endGame(); });
+                        } else {
+                            endGame();
+                        }
                     }
                 } else {
-                    // イージー・ハードでのリタイアも連勝ストリークをリセット
                     pData[currentMode].currentStreak = 0;
                     savePlayerData();
-
                     showMessage(`リタイアしました。正解は【${kanjiName}】でした。`);
                     showDescription();
                     endGame();
@@ -902,7 +1238,7 @@
                 const mapBtn = document.createElement("a");
                 
                 const searchQuery = encodeURIComponent("京都 " + data.kanji);
-                mapBtn.href = `http://googleusercontent.com/maps.google.com/2{searchQuery}`;
+                mapBtn.href = `https://maps.google.com/?q=${searchQuery}`;
                 
                 mapBtn.target = "_blank";
                 mapBtn.textContent = "🗺️ Google Mapsで場所を見る";
@@ -993,29 +1329,61 @@
                 return;
             }
             pData.name = nameVal;
+            pData.isGuestSkippedName = false; 
+            savePlayerData();
+            document.getElementById("name-setup-screen").style.display = "none";
+        });
+
+        document.getElementById("btn-skip-name").addEventListener("click", () => {
+            pData.name = ""; 
+            pData.isGuestSkippedName = true; 
             savePlayerData();
             document.getElementById("name-setup-screen").style.display = "none";
         });
 
         document.getElementById("btn-view-stats").addEventListener("click", () => {
-            document.getElementById("stats-player-title").textContent = pData.name;
+            const currentRank = calculateRank();
             
-            // イージーデータ反映
+            document.getElementById("stats-player-title").textContent = pData.name ? pData.name : "ゲスト";
+            document.getElementById("stat-current-rank").textContent = currentRank;
+            
+            // チーター段位のときだけ「不正を認める」ボタンを表示する
+            const btnAdmitCheat = document.getElementById("btn-admit-cheat");
+            if (currentRank === "チーター") {
+                btnAdmitCheat.style.display = "inline-block";
+            } else {
+                btnAdmitCheat.style.display = "none";
+            }
+            
             document.getElementById("stat-easy-wins").textContent = pData.easy.wins;
             document.getElementById("stat-easy-streak").textContent = `${pData.easy.currentStreak} / ${pData.easy.maxStreak}`;
             const easyAvg = pData.easy.winCountForAvg > 0 ? (pData.easy.totalAttempts / pData.easy.winCountForAvg).toFixed(1) : "0.0";
             document.getElementById("stat-easy-avg-attempts").textContent = easyAvg;
 
-            // ハードデータ反映
+            const eRecent = pData.easy.recentAttempts || [];
+            const eRecent10 = eRecent.slice(-10);
+            const easyRecentAvg = eRecent10.length > 0 ? (eRecent10.reduce((a,b)=>a+b,0)/eRecent10.length).toFixed(1) : "0.0";
+            document.getElementById("stat-easy-recent-avg-attempts").textContent = easyRecentAvg;
+
             document.getElementById("stat-hard-wins").textContent = pData.hard.wins;
             document.getElementById("stat-hard-streak").textContent = `${pData.hard.currentStreak} / ${pData.hard.maxStreak}`;
             const hardAvg = pData.hard.winCountForAvg > 0 ? (pData.hard.totalAttempts / pData.hard.winCountForAvg).toFixed(1) : "0.0";
             document.getElementById("stat-hard-avg-attempts").textContent = hardAvg;
 
-            // チャレンジデータ反映
+            const hRecent = pData.hard.recentAttempts || [];
+            const hRecent10 = hRecent.slice(-10);
+            const hardRecentAvg = hRecent10.length > 0 ? (hRecent10.reduce((a,b)=>a+b,0)/hRecent10.length).toFixed(1) : "0.0";
+            document.getElementById("stat-hard-recent-avg-attempts").textContent = hardRecentAvg;
+
+            document.getElementById("stat-challenge-plays").textContent = pData.challenge.totalGames || 0;
             document.getElementById("stat-challenge-max").textContent = pData.challenge.maxScore;
             const chalAvg = pData.challenge.totalGames > 0 ? (pData.challenge.totalScoreSum / pData.challenge.totalGames).toFixed(1) : "0.0";
             document.getElementById("stat-challenge-avg-score").textContent = chalAvg;
+
+            const cRecent = pData.challenge.recentScores || [];
+            const cRecent10 = cRecent.slice(-10);
+            const chalRecentAvg = cRecent10.length > 0 ? (cRecent10.reduce((a,b)=>a+b,0)/cRecent10.length).toFixed(1) : "0.0";
+            document.getElementById("stat-challenge-recent-avg-score").textContent = chalRecentAvg;
 
             document.getElementById("stats-modal").style.display = "flex";
         });
@@ -1024,16 +1392,65 @@
             document.getElementById("stats-modal").style.display = "none";
         });
 
+        // 「不正を認める」ボタンのクリックイベント
+        document.getElementById("btn-admit-cheat").addEventListener("click", () => {
+            if (confirm("改心しますか？改心すると、全ての記録がリセットされます。")) {
+    pData.hasReachedLifetimeMeijin = false;
+
+    // easy の初期化
+    pData.easy.wins = 0;
+    pData.easy.currentStreak = 0;
+    pData.easy.maxStreak = 0;
+    pData.easy.totalAttempts = 0;
+    pData.easy.winCountForAvg = 0;
+　　
+
+    // hard の初期化（配列は空 [] にする）
+    pData.hard.wins = 0;
+    pData.hard.currentStreak = 0;
+    pData.hard.maxStreak = 0;
+    pData.hard.totalAttempts = 0;
+    pData.hard.winCountForAvg = 0;
+    pData.hard.recentAttempts = [];
+
+    // challenge の初期化（配列は空 [] にする）
+    pData.challenge.maxScore = 0;
+    pData.challenge.totalGames = 0;
+    pData.challenge.totalScoreSum = 0;
+    pData.challenge.recentScores = [];
+
+                // チーター固定化フラグを解除
+                isCheaterLocked = false;
+                
+                // 新しい段位に変更・保存してUIを更新
+                savePlayerData();
+                
+                const nextRank = calculateRank();
+                document.getElementById("stat-current-rank").textContent = nextRank;
+                document.getElementById("stat-challenge-max").textContent = 0;
+                document.getElementById("btn-admit-cheat").style.display = "none";
+                
+                alert(`改心を受け入れました。段位が【${nextRank}】に再設定されました。`);
+            } else {
+                alert("段位は「チーター」のまま維持されます。");
+            }
+        });
+
         document.getElementById("btn-change-name-trigger").addEventListener("click", () => {
-            const newName = prompt("新しいプレイヤー名を入力してください（10文字以内）:", pData.name);
+            const newName = prompt("新しいプレイヤー名を入力してください（10文字以内）:\n※空欄のままOKを押すと、名前なし（非表示）に戻せます。", pData.name);
             if (newName !== null) {
                 const trimmed = newName.trim();
                 if (!trimmed) {
-                    alert("名前が空欄です。変更されませんでした。");
+                    pData.name = "";
+                    pData.isGuestSkippedName = true;
+                    savePlayerData();
+                    document.getElementById("stats-player-title").textContent = "ゲスト";
+                    alert("プレイヤー名を解除し、ゲスト状態にしました。");
                 } else if (trimmed.length > 10) {
                     alert("10文字以内で入力してください。");
                 } else {
                     pData.name = trimmed;
+                    pData.isGuestSkippedName = false;
                     savePlayerData();
                     document.getElementById("stats-player-title").textContent = pData.name;
                     alert("名前を変更しました！");
@@ -1041,7 +1458,6 @@
             }
         });
 
-        // ページ起動時の初期処理
         loadPlayerData();
         checkPlayerNameSetup();
         showModeSelection();
