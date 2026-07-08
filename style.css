@@ -11,8 +11,22 @@ body {
 }
 
 header {
-    text-align: center;
-    margin-bottom: 20px;
+    flex-direction: column;
+    align-items: center !important; /* 中央揃えにする */
+    gap: 15px;
+    text-align: center !important;
+}
+
+/* スマホの時は、名前と段位のパネルを中央寄せにして、左のボーダー線を消す */
+#header-player-panel {
+    text-align: center !important;
+    border-left: none !important;
+    border-top: 2px solid #e0dbcd; /* 線の位置を左から「上」に変更 */
+    padding-left: 0 !important;
+    padding-top: 10px;
+    width: 100%;
+    max-width: 300px; /* 線が広がりすぎないように制限 */
+    margin: 0 auto;
 }
 
 h1 {
@@ -158,6 +172,32 @@ h1 {
 .key[data-state="absent"] { background-color: #787c7e !important; color: #fff !important; }
 .key[data-state="present"] { background-color: #c9b458 !important; color: #fff !important; }
 .key[data-state="correct"] { background-color: #6aaa64 !important; color: #fff !important; }
+
+/* パソコン表示（画面幅が768px以上）のときの設定 */
+@media screen and (min-width: 768px) {
+    .pc-wide-container {
+        max-width: 900px;
+    }
+    .mode-flex-container {
+        flex-direction: row;
+    }
+    
+    /* ↓↓↓ ここから新しく追記する記述 ↓↓↓ */
+    header {
+        flex-direction: row; /* PCの時は元の横並びに戻す */
+        align-items: center;
+        text-align: left;
+    }
+    #header-player-panel {
+        text-align: right;
+        border-left: 2px solid #e0dbcd; /* PCの時は元の左側の線に戻す */
+        border-top: none;
+        padding-left: 15px;
+        padding-top: 0;
+        max-width: none;
+    }
+    /* ↑↑↑ ここまで ↑↑↑ */
+}
 
 /* スマホ用の縦並び調整 */
 @media (max-width: 768px) {
