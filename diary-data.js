@@ -1,6 +1,11 @@
 // 制作者日記のデータ（上にあるものほど新しい記事として表示されます）
 const DIARY_DATA = [
     {
+        date: "2026年7月9日",
+        title: "新ゲームの告知",
+        content: "新たに作った別のワードルの告知です。一つは、<a href='https://nobu0933.github.io/shrinedle-english/' target='_blank' style='color: #0066cc; text-decoration: underline;'>Shrinedle - English</a>。現行のShrinedleの英語版です。もう一つは<a href='https://nobu0933.github.io/yakyudle/' target='_blank' style='color: #0066cc; text-decoration: underline;'>Yakyudle</a>。セリーグの野球選手の名前当てワードルです。阪神の選手の説明文は、友人の過激な阪神ファンが書いてるので、正直非公開にしたいくらい思想が強いです。その点はご了承ください。"
+    },
+    {
         date: "2026年7月8日",
         title: "段位が追加されました。",
         content: "段位は下から順に、5級、4級、3級、2級、1級、初段、二段、三段、四段、五段、名人、永世名人です。初段から先は降段もあるので、注意しましょう。"

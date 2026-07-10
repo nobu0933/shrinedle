@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Shrinedle - 神社ワードル</title>
     
-    <link rel="icon" href="KSK_fabicon_1.png?v=3" type="image/png">
-    <link rel="apple-touch-icon" href="KSK_logo.png?v=3">
+    <link rel="icon" href="KSK_fabicon_1.png" type="image/png">
+    <link rel="apple-touch-icon" href="KSK_logo.png?v=2">
 
 	<meta name="description" content="神社ワードル。Shrinedle。Jinja Wordle">
 	<meta name="keywords" content="神社ワードル, shrinedle, 神ドル, Shrinedle, 京都, 神社, ワードル, Shrine, shrine, wordle, Wordle, Kyoto, シュラインドル">
@@ -174,6 +174,9 @@
             <button id="btn-save-name" style="width: 100%; padding: 12px; background-color: #d9333f; color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.2s; margin-bottom: 10px;">登録して始める</button>
             <button id="btn-skip-name" style="width: 100%; padding: 12px; background-color: #7f8c8d; color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.2s;">名前を登録しない</button>
             <p style="color: #7f8c8d; font-size: 0.85rem; margin-top: 20px; line-height: 1.4;">※ 名前を登録しない場合でもゲームを始められます。<br>名前は戦績画面からいつでも登録・変更可能です。</p>
+	   <p style="font-size: 1.1rem; color: #555; margin: 20px 0 0 0; border-top: 1px dashed #eee; padding-top: 15px;">
+                If you want to play English ver. , click <a href="https://nobu0933.github.io/shrinedle-english/" target="_blank" style="color: #0066cc; text-decoration: underline; font-weight: bold;">here</a>.
+            </p>
         </div>
     </div>
 
@@ -245,6 +248,10 @@
         </div>
         
         <div id="diary-articles-container" style="color: #333; line-height: 1.8; font-size: 0.95rem;"></div>
+    </div>
+
+<div class="pc-wide-container" style="text-align: center; margin-bottom: 20px; font-size: 1.2rem; color: #333;">
+        If you want to play English ver. , click <a href="https://nobu0933.github.io/shrinedle-english/" target="_blank" style="color: #0066cc; text-decoration: underline; font-weight: bold;">here</a>.
     </div>
 
     <div id="rule-box" class="pc-wide-container" style="background-color: #ffffff; border: 2px solid #e0dbcd; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left;">
@@ -499,13 +506,19 @@ function savePlayerData() {
             const cRecent100 = cRecent.slice(-100);
             const cAvgRecent100 = cRecent100.length > 0 ? (cRecent100.reduce((a, b) => a + b, 0) / cRecent100.length) : 0;
 
-            if (cMax >= 16) {
-                isCheaterLocked = true; // 初めてチーターに達した際にロックを有効にします
+// 修正版：履歴が5回以上あるときだけ直近5回の平均をチェックする
+            if (
+                cMax >= 16 || 
+                (eRecent.length >= 5 && (eRecent.slice(-5).reduce((a,b)=>a+b,0) / eRecent.slice(-5).length) === 1) ||
+		(hRecent.length >= 5 && (hRecent.slice(-5).reduce((a,b)=>a+b,0) / hRecent.slice(-5).length) === 1)
+
+            ) {
+                isCheaterLocked = true;
                 return "チーター";
             }
 
             if (pData.hasReachedLifetimeMeijin || 
-                (hWins >= 200 && hAvgAll <= 5) ||
+                (pData.hard.currentStreak >= 200 && hAvgAll <= 3.5) ||
                 (cPlays >= 200 && cAvgAll >= 5 && cMax >= 7)
             ) {
                 pData.hasReachedLifetimeMeijin = true; 
@@ -513,40 +526,39 @@ function savePlayerData() {
             }
 
             if (
-                (hWins >= 100 && hAvgRecent100 <= 5) ||
+                (pData.hard.currentStreak >= 100 && hAvgRecent100 <= 3.5) ||
                 (cPlays >= 100 && cAvgRecent100 >= 5 && cMax >= 7)
             ) return "名人";
 
             if (
-                (hWins >= 70 && hAvgRecent20 <= 5) ||
-                (cPlays >= 50 && cAvgRecent50 >= 5 && cMax >= 7)
+                (hWins >= 60 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 4) ||
+                (cPlays >= 40 && cRecent.slice(-20).length > 0 && (cRecent.slice(-20).reduce((a,b)=>a+b,0)/cRecent.slice(-20).length) >= 5 && cMax >= 7)
             ) return "五段";
 
             if (
-                (hWins >= 60 && hAvgRecent100 <= 5) || 
-                (hWins >= 60 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 5) ||  
-                (cPlays >= 40 && cRecent.slice(-20).length > 0 && (cRecent.slice(-20).reduce((a,b)=>a+b,0)/cRecent.slice(-20).length) >= 5 && cMax >= 7)
+                (hWins >= 50 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 5) ||
+                (cPlays >= 40 && cRecent.slice(-10).length > 0 && (cRecent.slice(-10).reduce((a,b)=>a+b,0)/cRecent.slice(-10).length) >= 5 && cMax >= 6)
             ) return "四段";
 
             if (
-                (hWins >= 50 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 6) ||
-                (cPlays >= 30 && cRecent.slice(-10).length > 0 && (cRecent.slice(-10).reduce((a,b)=>a+b,0)/cRecent.slice(-10).length) >= 5 && cMax >= 6)
+                (hWins >= 40 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 6) ||
+                (cPlays >= 30 && cRecent.slice(-10).length > 0 && (cRecent.slice(-10).reduce((a,b)=>a+b,0)/cRecent.slice(-10).length) >= 4 && cMax >= 6)
             ) return "三段";
 
             if (
-                (hWins >= 40 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 7) ||
-                (cPlays >= 20 && cRecent.slice(-10).length > 0 && (cRecent.slice(-10).reduce((a,b)=>a+b,0)/cRecent.slice(-10).length) >= 4 && cMax >= 6)
+                (hWins >= 30 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 7) ||
+                (cPlays >= 20 && cRecent.slice(-10).length > 0 && (cRecent.slice(-10).reduce((a,b)=>a+b,0)/cRecent.slice(-10).length) >= 3 && cMax >= 6)
             ) return "二段";
 
             if (
-                (hWins >= 30 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 8) ||
-                (cPlays >= 10 && cRecent.slice(-10).length > 0 && (cRecent.slice(-10).reduce((a,b)=>a+b,0)/cRecent.slice(-10).length) >= 3 && cMax >= 6)
+                (hWins >= 20 && hRecent.slice(-10).length > 0 && (hRecent.slice(-10).reduce((a,b)=>a+b,0)/hRecent.slice(-10).length) <= 8) ||
+                (cPlays >= 10 && cRecent.slice(-10).length > 0 && (cRecent.slice(-10).reduce((a,b)=>a+b,0)/cRecent.slice(-10).length) >= 2 && cMax >= 6)
             ) return "初段";
 
-            if (eWins >= 40 || hWins >= 20 || cMax >= 6) return "1級";
-            if (eWins >= 30 || hWins >= 15 || cMax >= 5) return "2級";
-            if (eWins >= 20 || hWins >= 10 || cMax >= 4) return "3級";
-            if (eWins >= 10 || hWins >= 5 || cMax >= 3) return "4級";
+            if (eWins >= 30 || hWins >= 15 || cMax >= 5) return "1級";
+            if (eWins >= 20 || hWins >= 10 || cMax >= 4) return "2級";
+            if (eWins >= 10 || hWins >= 5 || cMax >= 3) return "3級";
+            if (eWins >= 4 || hWins >= 2 || cMax >= 2) return "4級";
 
             return "5級";
         }
@@ -826,7 +838,7 @@ function savePlayerData() {
             return "もっと京都の神社を知りましょう。";
         }
 
-        function showOathModal(endGameCallback, defaultMsg) {
+function showOathModal(endGameCallback, defaultMsg, mode) {
             const modalOverlay = document.createElement("div");
             modalOverlay.className = "oath-modal-overlay";
             
@@ -849,6 +861,16 @@ function savePlayerData() {
             btnYes.textContent = "はい";
             btnYes.onclick = () => {
                 modalOverlay.remove(); 
+                
+                // ★イージーまたはハードモード用の「はい」の処理
+                if (mode === "easy" || mode === "hard") {
+                    showMessage(defaultMsg + "\n\n🌟 恐ろしいくらいの爆運ですね！");
+                    showDescription();
+                    endGameCallback();
+                    return;
+                }
+
+                // チャレンジモード用の「はい」の処理
                 showMessage(defaultMsg + "\n\n🌟 恐ろしいくらいの爆運ですね！");
                 
                 if (challengeScore > pData.challenge.maxScore) {
@@ -888,6 +910,16 @@ function savePlayerData() {
                     document.body.appendChild(blackoutMsg);
                 }, 1000);
 
+                // ★イージーまたはハードモード用の「いいえ（不正）」の処理
+                if (mode === "easy" || mode === "hard") {
+                    isCheaterLocked = true; // チーターにロック
+                    savePlayerData();
+                    showDescription();
+                    endGameCallback();
+                    return;
+                }
+
+                // チャレンジモード用の「いいえ」の処理
                 pData.challenge.totalGames++;
                 pData.challenge.totalScoreSum += challengeScore;
 
@@ -910,7 +942,7 @@ function savePlayerData() {
             document.body.appendChild(modalOverlay);
         }
 
-        function submitGuess() {
+function submitGuess() {
             if (gameOver) return;
 
             shrineInput.value = convertToLarge(shrineInput.value).split('').filter(char => ALLOWED_CHARS.includes(char)).join('');
@@ -988,6 +1020,7 @@ function savePlayerData() {
                 }
             }
 
+            // 【安全対策】ここで先に kanjiName をしっかり作っておきます
             const correctData = activeData[RANDOM_KANA];
             const kanjiName = correctData ? correctData.kanji : RANDOM_KANA;
 
@@ -1002,7 +1035,8 @@ function savePlayerData() {
                         const rankMsg = getRankMessage(challengeScore);
                         
                         if (challengeScore >= 11) {
-                            showOathModal(endGame, `正解！【${kanjiName}】です。ゲーム終了です。\n最終正解数: ${challengeScore}か所！`);
+                            // チャレンジ用第3引数付き
+                            showOathModal(endGame, `正解！【${kanjiName}】です。ゲーム終了です。\n最終正解数: ${challengeScore}か所！`, "challenge");
                         } else {
                             if (challengeScore > pData.challenge.maxScore) {
                                 pData.challenge.maxScore = challengeScore;
@@ -1046,17 +1080,45 @@ function savePlayerData() {
                     pData[currentMode].totalAttempts += (currentRow + 1);
                     pData[currentMode].winCountForAvg++;
 
-		   if (currentMode === "easy") {
+if (currentMode === "easy") {
                         if (!pData.easy.recentAttempts) pData.easy.recentAttempts = [];
                         pData.easy.recentAttempts.push(currentRow + 1);
                         if (pData.easy.recentAttempts.length > 100) {
                             pData.easy.recentAttempts.shift(); 
+                        }
+
+                        // イージーモード直近3回 1発正解の判定
+                        const eRecent = pData.easy.recentAttempts;
+                        if (eRecent.length >= 3) {
+                            const last3 = eRecent.slice(-3);
+                            const sum3 = last3.reduce((a, b) => a + b, 0);
+                            const av3 = sum3 / 3;
+
+                            if (av3 === 1) {
+                                savePlayerData();
+                                showOathModal(endGame, `お見事！正解は【${kanjiName}】です！ 🎉`, "easy");
+                                return; 
+                            }
                         }
                     } else if (currentMode === "hard") {
                         if (!pData.hard.recentAttempts) pData.hard.recentAttempts = [];
                         pData.hard.recentAttempts.push(currentRow + 1);
                         if (pData.hard.recentAttempts.length > 100) {
                             pData.hard.recentAttempts.shift(); 
+                        }
+
+                        // ★【追加】ハードモード直近3回 1発正解の判定
+                        const hRecent = pData.hard.recentAttempts;
+                        if (hRecent.length >= 3) {
+                            const last3 = hRecent.slice(-3);
+                            const sum3 = last3.reduce((a, b) => a + b, 0);
+                            const av3 = sum3 / 3;
+
+                            if (av3 === 1) {
+                                savePlayerData();
+                                showOathModal(endGame, `お見事！正解は【${kanjiName}】です！ 🎉`, "hard");
+                                return; 
+                            }
                         }
                     }
 
@@ -1078,7 +1140,8 @@ function savePlayerData() {
                     const rankMsg = getRankMessage(challengeScore);
                     
                     if (challengeScore >= 11) {
-                        showOathModal(endGame, `制限回数（20回）に達しました！ゲーム終了です。\n最終正解数: ${challengeScore}か所！`);
+                        // チャレンジ用第3引数付き
+                        showOathModal(endGame, `制限回数（20回）に達しました！ゲーム終了です。\n最終正解数: ${challengeScore}か所！`, "challenge");
                     } else {
                         if (challengeScore > pData.challenge.maxScore) {
                             pData.challenge.maxScore = challengeScore;
@@ -1103,6 +1166,15 @@ function savePlayerData() {
                     }
                 } else {
                     pData[currentMode].currentStreak = 0;
+
+                    if (currentMode === "easy") {
+                        if (!pData.easy.recentAttempts) pData.easy.recentAttempts = [];
+                        pData.easy.recentAttempts.push(21);
+                        if (pData.easy.recentAttempts.length > 100) {
+                            pData.easy.recentAttempts.shift();
+                        }
+                    }
+
                     savePlayerData();
                     showMessage(`残念！正解は【${kanjiName}】でした。`);
                     showDescription();
