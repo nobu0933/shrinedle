@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Shrinedle - 神社ワードル</title>
     
-    <link rel="icon" href="KSK_fabicon_1.png?v=2" type="image/png">
+    <link rel="icon" href="KSK_fabicon_1.png" type="image/png">
     <link rel="apple-touch-icon" href="KSK_logo.png?v=2">
 
 	<meta name="description" content="神社ワードル。Shrinedle。Jinja Wordle">
@@ -250,9 +250,9 @@
         <div id="diary-articles-container" style="color: #333; line-height: 1.8; font-size: 0.95rem;"></div>
     </div>
 
-<div class="pc-wide-container" style="text-align: center; margin-bottom: 20px; font-size: 1.2rem; color: #333;">
-        If you want to play English ver. , click <a href="https://nobu0933.github.io/shrinedle-english/" target="_blank" style="color: #0066cc; text-decoration: underline; font-weight: bold;">here</a>.
-    </div>
+<div id="english-link-container" class="pc-wide-container" style="text-align: center; margin-bottom: 20px; font-size: 1.2rem; color: #333;">
+    If you want to play English ver. , click <a href="https://nobu0933.github.io/shrinedle-english/" target="_blank" style="color: #0066cc; text-decoration: underline; font-weight: bold;">here</a>.
+</div>
 
     <div id="rule-box" class="pc-wide-container" style="background-color: #ffffff; border: 2px solid #e0dbcd; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left;">
         <h3 style="margin-top: 0; margin-bottom: 12px; color: #d9333f; font-size: 1.2rem; border-bottom: 2px solid #d9333f; padding-bottom: 5px; display: inline-block;">基本ルール</h3>
@@ -647,18 +647,22 @@ function savePlayerData() {
             gameContent.style.display = "none";
         }
 
-        function setGameVisibility(visibleState) {
-            const displayVal = visibleState ? "block" : "none";
-            ruleBox.style.display = displayVal;
-            modeSelection.style.display = displayVal;
-            if (!visibleState) {
-                gameContent.style.display = "none";
-            } else if (gameContent.hasAttribute("data-playing")) {
-                gameContent.style.display = "flex";
-                modeSelection.style.display = "none";
-                ruleBox.style.display = "none";
-            }
-        }
+function setGameVisibility(visibleState) {
+    const displayVal = visibleState ? "block" : "none";
+    ruleBox.style.display = displayVal;
+    modeSelection.style.display = displayVal;
+    
+    // 👇ここを1行追加（HTMLにつけたidと同じ名前で指定します）
+    document.getElementById("english-link-container").style.display = displayVal; 
+    
+    if (!visibleState) {
+        gameContent.style.display = "none";
+    } else if (gameContent.hasAttribute("data-playing")) {
+        gameContent.style.display = "flex";
+        modeSelection.style.display = "none";
+        ruleBox.style.display = "none";
+    }
+}
 
         function setupNextQuestion() {
             let pool = [];
