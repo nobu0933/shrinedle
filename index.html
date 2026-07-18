@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Shrinedle - 神社ワードル</title>
     
-    <link rel="icon" href="KSK_fabicon_1.png?v=3" type="image/png">
+    <link rel="icon" href="KSK_fabicon_1.png" type="image/png">
     <link rel="apple-touch-icon" href="KSK_logo.png?v=2">
 
 	<meta name="description" content="神社ワードル。Shrinedle。Jinja Wordle">
@@ -500,8 +500,8 @@ function savePlayerData() {
             const cRecent50 = cRecent.slice(-50);
             const cAvgRecent50 = cRecent50.length > 0 ? (cRecent50.reduce((a, b) => a + b, 0) / cRecent50.length) : 0;
 
-            const hRecent100 = hRecent.slice(-100);
-            const hAvgRecent100 = hRecent100.length > 0 ? (hRecent100.reduce((a, b) => a + b, 0) / hRecent100.length) : 999;
+            const hRecent150 = hRecent.slice(-150);
+            const hAvgRecent150 = hRecent150.length > 0 ? (hRecent150.reduce((a, b) => a + b, 0) / hRecent100.length) : 999;
 
             const cRecent100 = cRecent.slice(-100);
             const cAvgRecent100 = cRecent100.length > 0 ? (cRecent100.reduce((a, b) => a + b, 0) / cRecent100.length) : 0;
@@ -518,7 +518,7 @@ function savePlayerData() {
             }
 
             if (pData.hasReachedLifetimeMeijin || 
-                (pData.hard.currentStreak >= 200 && hAvgAll <= 3.5) ||
+                (pData.hard.currentStreak >= 300 && hAvgAll <= 3.5) ||
                 (cPlays >= 200 && cAvgAll >= 5 && cMax >= 7)
             ) {
                 pData.hasReachedLifetimeMeijin = true; 
@@ -526,7 +526,7 @@ function savePlayerData() {
             }
 
             if (
-                (pData.hard.currentStreak >= 100 && hAvgRecent100 <= 3.5) ||
+                (pData.hard.currentStreak >= 150 && hAvgRecent150 <= 3.5) ||
                 (cPlays >= 100 && cAvgRecent100 >= 5 && cMax >= 7)
             ) return "名人";
 
