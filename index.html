@@ -501,7 +501,7 @@ function savePlayerData() {
             const cAvgRecent50 = cRecent50.length > 0 ? (cRecent50.reduce((a, b) => a + b, 0) / cRecent50.length) : 0;
 
             const hRecent150 = hRecent.slice(-150);
-            const hAvgRecent150 = hRecent150.length > 0 ? (hRecent150.reduce((a, b) => a + b, 0) / hRecent100.length) : 999;
+            const hAvgRecent150 = hRecent150.length > 0 ? (hRecent150.reduce((a, b) => a + b, 0) / hRecent150.length) : 999;
 
             const cRecent100 = cRecent.slice(-100);
             const cAvgRecent100 = cRecent100.length > 0 ? (cRecent100.reduce((a, b) => a + b, 0) / cRecent100.length) : 0;
