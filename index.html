@@ -239,6 +239,14 @@
             <div id="display-player-rank" style="font-size: 1.15rem; color: #d9333f; font-weight: bold; margin-bottom: 8px; white-space: nowrap;">現在の段位：5級</div>
             <button id="btn-view-stats" style="padding: 6px 12px; background-color: #d9333f; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap;">自分の記録を見る</button>
         </div>
+ 
+	<div id="daimonji-wrapper" class="daimonji-special-day" style="display: none;">
+    <div class="daimonji-crossfade-container">
+        <img src="no_daimonji.png" alt="送り火前" class="daimonji-base-img">
+        <img src="daimonji.png" alt="大文字送り火" class="daimonji-fire-img">
+    </div>
+</div>
+
     </header>
 
     <div id="diary-section" class="pc-wide-container" style="display: none; background-color: #fdfbf7; border: 2px solid #dcd5c5; border-radius: 8px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: left;">
@@ -1537,6 +1545,28 @@ if (currentMode === "easy") {
         loadPlayerData();
         checkPlayerNameSetup();
         showModeSelection();
+ 
+function checkDaimonjiSpecialDay() {
+    const today = new Date();
+    const month = today.getMonth() + 1; // 8月なら 8
+    const date = today.getDate();
+
+    // 例: 8月16日の場合のみ実行
+    if (month === 8 && date === 16) {
+        // 大文字画像の表示
+        const wrapper = document.getElementById("daimonji-wrapper");
+        if (wrapper) {
+            wrapper.style.display = "block";
+        }
+
+        // 背景アニメーションの起動
+        document.body.classList.add("special-night-bg");
+    }
+}
+
+// ページ読み込み完了時に実行
+document.addEventListener("DOMContentLoaded", checkDaimonjiSpecialDay);
+
     </script>
 </body>
 </html>

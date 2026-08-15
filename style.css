@@ -316,3 +316,88 @@ h1 {
     background-color: #7f8c8d;
     color: white;
 }
+
+/* 右側ヘッダーコンテナ（フレックス配置） */
+.header-right-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px; /* プレイヤー情報と画像の間の余白 */
+}
+
+/* --- 大文字画像エリア（重ね合わせコンテナ） --- */
+#daimonji-wrapper {
+    flex-shrink: 0;
+}
+
+.daimonji-crossfade-container {
+    position: relative;
+    width: fit-content;
+    height: 110px; /* PC表示時の高さ */
+}
+
+/* 2枚の画像共通スタイル */
+.daimonji-base-img,
+.daimonji-fire-img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    display: block;
+}
+
+/* 上に重ねる大文字画像（初期状態は透明） */
+.daimonji-fire-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0; /* 最初は非表示 */
+}
+
+/* スマホなど画面が狭い時のレイアウト崩れ防止 */
+@media (max-width: 600px) {
+    .header-right-container {
+        flex-direction: column; /* スマホでは縦並び */
+        align-items: center;
+    }
+    .daimonji-crossfade-container {
+        height: 70px; /* スマホ表示時の高さ */
+    }
+}
+
+/* --- 特定日限定：夜空を2秒維持＋3秒かけて朝焼けのように通常色へ戻す --- */
+@keyframes nightToDayBg {
+    0% {
+        background-color: #1a2a6c; /* 始色：深い夜空（紺色） */
+    }
+    40% {
+        background-color: #1a2a6c; /* 0秒～2秒目（全体の40%）までは紺色を維持 */
+    }
+    100% {
+        background-color: #fcfaf2; /* 5秒目にいつもの背景色へ */
+    }
+}
+
+/* --- 特定日限定：最初の2秒間で大文字を点火（浮き上がらせる） --- */
+@keyframes daimonjiIgnite {
+    0% {
+        opacity: 0; /* 0秒目：大文字なし（no_daimonjiが見える） */
+    }
+    40% {
+        opacity: 1; /* 2秒目（40%）：大文字が完全点火 */
+    }
+    100% {
+        opacity: 1; /* 5秒目まで表示維持 */
+    }
+}
+
+/* アニメーション適用用クラス */
+body.special-night-bg {
+    /* 背景色アニメーション（5秒） */
+    animation: nightToDayBg 5s ease-out forwards;
+}
+
+/* 特定日実行時に、上層の「大文字画像」をアニメーション表示 */
+body.special-night-bg .daimonji-fire-img {
+    animation: daimonjiIgnite 5s ease-in-out forwards;
+}
